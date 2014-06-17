@@ -18,8 +18,7 @@ import javax.inject.Inject;
  */
 
 @Remote(IRulesMgmtService.class)
-@Local(IRulesMgmtService.class)
-@Singleton(name="prodKSessionProxy")
+@Singleton(name="rulesMgmtService")
 @Startup
 @Lock(LockType.READ)
 @TransactionAttribute(TransactionAttributeType.REQUIRED)

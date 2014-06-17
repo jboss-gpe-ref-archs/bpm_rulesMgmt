@@ -9,8 +9,9 @@
   <version>1.0</version>
 
   <modules>
+    <module>domain</module>
     <module>interfaces</module>
-    <module>services</module>
+    <module>rulesMgmt</module>
   </modules>
 
 </project>
