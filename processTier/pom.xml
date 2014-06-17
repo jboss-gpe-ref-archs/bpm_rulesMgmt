@@ -18,7 +18,7 @@
     <repository>
       <id>guvnor-m2-repo</id>
       <name>Guvnor M2 Repo</name>
-      <url>http://$HOSTNAME:8080/business-central/maven2/</url>
+      <url>http://5be0618781aa:8080/business-central/maven2/</url>
     </repository>
   </repositories>
   <build>
