@@ -1,0 +1,14 @@
+package com.redhat.gpe.refarch.bpm_rulesMgmt.processTier;
+
+import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy;
+global java.lang.StringBuilder sBuilder;
+
+rule "testRule"
+  when
+      $policy : Policy()
+  then
+     String statement = "testRule() ... just executed";
+     sBuilder.append(statement);
+     System.out.println(statement);
+end  
+
