@@ -8,11 +8,6 @@
   <packaging>kjar</packaging>
   <name>processTier</name>
   <dependencies>
-    <dependency>
-      <groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId>
-      <artifactId>domain</artifactId>
-      <version>1.0</version>
-    </dependency>
   </dependencies>
   <repositories>
     <repository>
