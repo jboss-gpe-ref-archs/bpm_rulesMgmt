@@ -4,6 +4,9 @@
       <import>
         <type>java.lang.Number</type>
       </import>
+      <import>
+        <type>com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy</type>
+      </import>
     </imports>
   </imports>
   <version>1.0</version>
