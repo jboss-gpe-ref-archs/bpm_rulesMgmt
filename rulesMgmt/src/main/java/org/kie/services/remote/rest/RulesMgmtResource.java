@@ -28,10 +28,10 @@ public class RulesMgmtResource {
     @PUT
     @Path("/rulesLifecycle/{deploymentId: .*}/")
     public Response testRulesLifecycle(@PathParam("deploymentId") final String deploymentId) {
-    	//rProxy.setGlobal(deploymentId, "testGlobal", new Object());
+    	rProxy.setGlobal(deploymentId, "sBuilder", new StringBuilder());
     	rProxy.insertFact(deploymentId, new Policy());
     	int numRulesFired = rProxy.fireAllRules(deploymentId);
-    	rProxy.dispose(deploymentId);
+    	//rProxy.dispose(deploymentId);
     	ResponseBuilder builder = Response.ok("number of rules Fired = "+numRulesFired+"\n");
         return builder.build();
     }
