@@ -17,6 +17,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
   </properties>
 
+  <build>
+    <finalName>bpm_rulesMgmt</finalName>
+  </build>
+
   <dependencyManagement>
     <dependencies>
       <dependency>

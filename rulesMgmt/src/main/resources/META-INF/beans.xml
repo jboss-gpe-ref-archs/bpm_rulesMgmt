@@ -4,6 +4,6 @@
       http://java.sun.com/xml/ns/javaee
       http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
     <alternatives>
-        <class>org.kie.services.remote.rest.RulesMgmtBean</class>
+        <class>org.kie.services.remote.cdi.RulesMgmtBean</class>
     </alternatives>
 </beans>

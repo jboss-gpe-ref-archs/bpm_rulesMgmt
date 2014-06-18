@@ -1,8 +1,16 @@
 package com.redhat.gpe.refarch.bpm_rulesMgmt.domain;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name="policy")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Policy", propOrder = {
+    "policyId",
+    "policyName"
+})
+@XmlRootElement(name="Policy")
 public class Policy implements java.io.Serializable{
 
     private int policyId;
@@ -19,7 +27,7 @@ public class Policy implements java.io.Serializable{
         StringBuilder sBuilder = new StringBuilder();
         sBuilder.append("policyId = ");
         sBuilder.append(policyId);
-        sBuilder.append("policyName = ");
+        sBuilder.append("\tpolicyName = ");
         sBuilder.append(policyName);
         return sBuilder.toString();
     }

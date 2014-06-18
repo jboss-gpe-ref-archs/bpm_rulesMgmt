@@ -8,6 +8,7 @@
 
   <!-- use jandex to explicitly index annotations in domain model jar deployed as static module -->
   <build>
+    <finalName>bpm_rulesMgmt_domain</finalName>                   
     <plugins>
       <plugin>
         <groupId>org.jboss.jandex</groupId>

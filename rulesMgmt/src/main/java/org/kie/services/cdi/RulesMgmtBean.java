@@ -1,7 +1,10 @@
-package org.kie.services.remote.rest;
+package org.kie.services.remote.cdi;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -56,9 +59,42 @@ public class RulesMgmtBean implements IRulesMgmt {
     }
     
     // returns facts;  typically want to invoke this after having invoked:  fireAllRules
-    public Collection<? extends Object> getFacts(String deploymentId){
+    @SuppressWarnings("unchecked")
+	public Collection<Serializable> getFacts(String deploymentId){
         KieSession kSession = getKieSession(deploymentId);
-        return kSession.getObjects();
+        Collection<? extends Object> droolsCollection = kSession.getObjects();
+        Iterator iCollection = droolsCollection.iterator();
+        Collection<Serializable> serializedCollection = new ArrayList<Serializable>();
+        while(iCollection.hasNext()){
+        	serializedCollection.add((Serializable)iCollection.next());
+        }
+        return serializedCollection;
+    }
+    
+    public int removeFacts(String deploymentId) {
+    	KieSession kSession = getKieSession(deploymentId);
+    	Collection<FactHandle> facts = kSession.getFactHandles();
+    	Iterator<FactHandle> iFacts = facts.iterator();
+    	int factCount = facts.size();
+    	while(iFacts.hasNext()){
+    	  FactHandle fHandle = iFacts.next();
+    	  kSession.delete(fHandle);
+    	}
+    	return factCount;
+    }
+    
+    // dumps inventory of facts to log file
+    public void dumpFacts(String deploymentId) {
+    	KieSession kSession = getKieSession(deploymentId);
+    	Collection<? extends Object> facts = kSession.getObjects();
+    	Iterator iFacts = facts.iterator();
+    	StringBuilder sBuilder = new StringBuilder();
+    	sBuilder.append("dumpFacts() facts = \n");
+    	while(iFacts.hasNext()){
+    		sBuilder.append(iFacts.next());
+    		sBuilder.append("\n");
+    	}
+    	logger.info(sBuilder.toString());
     }
     
     public void dispose(String deploymentId) {

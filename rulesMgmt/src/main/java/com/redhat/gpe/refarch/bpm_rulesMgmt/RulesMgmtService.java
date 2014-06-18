@@ -1,5 +1,6 @@
-package org.kie.services.remote.rest;
+package com.redhat.gpe.refarch.bpm_rulesMgmt;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import javax.ejb.Local;
@@ -12,12 +13,14 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
+import org.kie.services.remote.cdi.IRulesMgmt;
+
 
 /*
- * EJB Facade to RulesMgmt functionality
+ * EJB Facade that introduces transaction boundaries and remoting interface for RulesMgmt functionality
  */
 
-@Remote(IRulesMgmtService.class)
+@Local(IRulesMgmtService.class)
 @Singleton(name="rulesMgmtService")
 @Startup
 @Lock(LockType.READ)
@@ -40,11 +43,19 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.fireAllRules(deploymentId);
     }
 
-    public Collection<? extends Object> getFacts(String deploymentId) {
+    public Collection<Serializable> getFacts(String deploymentId) {
         return rMgmtBean.getFacts(deploymentId);
     }
 
     public void dispose(String deploymentId) {
         rMgmtBean.dispose(deploymentId);
     }
+
+	public void dumpFacts(String deploymentId) {
+		rMgmtBean.dumpFacts(deploymentId);
+	}
+	
+	public int removeFacts(String deploymentId) {
+		return rMgmtBean.removeFacts(deploymentId);
+	}
 }
