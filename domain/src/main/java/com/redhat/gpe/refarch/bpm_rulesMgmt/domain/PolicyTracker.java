@@ -14,16 +14,16 @@ import javax.xml.bind.annotation.XmlType;
 })
 @XmlRootElement(name="PolicyTracker")
 public class PolicyTracker implements Serializable {
-	
-	private static final long serialVersionUID = 2661926848351583891L;
-	private int processedCount;
-	
-	public int getProcessedCount() {
-		return processedCount;
-	}
-	
-	public void setProcessedCount(int x) {
-		this.processedCount = x;
-	}
+    
+    private static final long serialVersionUID = 2661926848351583891L;
+    private int processedCount;
+    
+    public int getProcessedCount() {
+        return processedCount;
+    }
+    
+    public void setProcessedCount(int x) {
+        this.processedCount = x;
+    }
 
 }

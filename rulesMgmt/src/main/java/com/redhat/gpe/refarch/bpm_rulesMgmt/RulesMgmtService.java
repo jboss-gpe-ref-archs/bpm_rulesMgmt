@@ -51,11 +51,11 @@ public class RulesMgmtService implements IRulesMgmtService {
         rMgmtBean.dispose(deploymentId);
     }
 
-	public void dumpFacts(String deploymentId) {
-		rMgmtBean.dumpFacts(deploymentId);
-	}
-	
-	public int removeFacts(String deploymentId) {
-		return rMgmtBean.removeFacts(deploymentId);
-	}
+    public void dumpFacts(String deploymentId) {
+        rMgmtBean.dumpFacts(deploymentId);
+    }
+    
+    public int removeFacts(String deploymentId) {
+        return rMgmtBean.removeFacts(deploymentId);
+    }
 }

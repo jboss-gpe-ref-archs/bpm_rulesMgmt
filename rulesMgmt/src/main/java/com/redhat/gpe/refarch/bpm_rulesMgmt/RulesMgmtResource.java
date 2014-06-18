@@ -53,9 +53,9 @@ public class RulesMgmtResource {
     @Consumes({"application/json","application/xml"})
     @Produces({ "text/plain" })
     public Response insertFact(@PathParam("deploymentId") final String deploymentId, Policy pObj) {
-    	rProxy.insertFact(deploymentId, pObj);
-    	ResponseBuilder builder = Response.ok();
-    	return builder.build();
+        rProxy.insertFact(deploymentId, pObj);
+        ResponseBuilder builder = Response.ok();
+        return builder.build();
     }
     
     /**
@@ -67,9 +67,9 @@ public class RulesMgmtResource {
     @Consumes({"application/json","application/xml"})
     @Produces({ "text/plain" })
     public Response setGlobal(@PathParam("deploymentId") final String deploymentId, @PathParam("identifier") final String identifier, PolicyTracker pTracker) {
-    	rProxy.setGlobal(deploymentId, identifier, pTracker);
-    	ResponseBuilder builder = Response.ok();
-    	return builder.build();
+        rProxy.setGlobal(deploymentId, identifier, pTracker);
+        ResponseBuilder builder = Response.ok();
+        return builder.build();
     }
     
     /**
@@ -80,9 +80,9 @@ public class RulesMgmtResource {
     @Path("/{deploymentId: .*}/fireAllRules")
     @Produces({ "text/plain" })
     public Response fireAllRules(@PathParam("deploymentId") final String deploymentId) {
-    	int firedRuleCount = rProxy.fireAllRules(deploymentId);
-    	ResponseBuilder builder = Response.ok(firedRuleCount);
-    	return builder.build();
+        int firedRuleCount = rProxy.fireAllRules(deploymentId);
+        ResponseBuilder builder = Response.ok(firedRuleCount);
+        return builder.build();
     }
     
     /**
@@ -93,9 +93,9 @@ public class RulesMgmtResource {
     @Path("/{deploymentId: .*}/facts")
     @Produces({ "text/plain" })
     public Response removeFacts(@PathParam("deploymentId") final String deploymentId) {
-    	int factsRemoved = rProxy.removeFacts(deploymentId);
-    	ResponseBuilder builder = Response.ok(factsRemoved);
-    	return builder.build();
+        int factsRemoved = rProxy.removeFacts(deploymentId);
+        ResponseBuilder builder = Response.ok(factsRemoved);
+        return builder.build();
     }
     
     /**
@@ -106,34 +106,34 @@ public class RulesMgmtResource {
     @Path("/{deploymentId: .*}/facts")
     @Produces({ "application/xml" })
     public Response getFacts(@PathParam("deploymentId") final String deploymentId) {
-    	Collection<Serializable> facts = rProxy.getFacts(deploymentId);
-    	List fList = new ArrayList(facts);
-    	PolicyList pList = new PolicyList(fList);
-    	JAXBContext jc;
-    	ResponseBuilder builder = null;
-    	Writer sWriter = null;
-		try {
-			jc = JAXBContext.newInstance(PolicyList.class, Policy.class);
-			Marshaller marshaller = jc.createMarshaller();
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			QName qName = new QName("policyList");
-			JAXBElement<PolicyList> jaxbElement = new JAXBElement<PolicyList>(qName, PolicyList.class, pList);
-	        //marshaller.marshal(jaxbElement, System.out);
-			sWriter = new StringWriter();
-	        marshaller.marshal(jaxbElement, sWriter);
-		    builder = Response.ok(sWriter.toString());
-		} catch (JAXBException e) {
-			e.printStackTrace();
-			builder = Response.status(Status.INTERNAL_SERVER_ERROR);
-		}finally {
-				try {
-					if(sWriter != null)
-					   sWriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}
-    	return builder.build();
+        Collection<Serializable> facts = rProxy.getFacts(deploymentId);
+        List fList = new ArrayList(facts);
+        PolicyList pList = new PolicyList(fList);
+        JAXBContext jc;
+        ResponseBuilder builder = null;
+        Writer sWriter = null;
+        try {
+            jc = JAXBContext.newInstance(PolicyList.class, Policy.class);
+            Marshaller marshaller = jc.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            QName qName = new QName("policyList");
+            JAXBElement<PolicyList> jaxbElement = new JAXBElement<PolicyList>(qName, PolicyList.class, pList);
+            //marshaller.marshal(jaxbElement, System.out);
+            sWriter = new StringWriter();
+            marshaller.marshal(jaxbElement, sWriter);
+            builder = Response.ok(sWriter.toString());
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            builder = Response.status(Status.INTERNAL_SERVER_ERROR);
+        }finally {
+                try {
+                    if(sWriter != null)
+                       sWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+        return builder.build();
     }
     
     /**
@@ -144,9 +144,9 @@ public class RulesMgmtResource {
     @Path("/{deploymentId: .*}/facts/count")
     @Produces({ "text/plain" })
     public Response getFactCount(@PathParam("deploymentId") final String deploymentId) {
-    	Collection<Serializable> facts = rProxy.getFacts(deploymentId);
-    	ResponseBuilder builder = Response.ok(facts.size());
-    	return builder.build();
+        Collection<Serializable> facts = rProxy.getFacts(deploymentId);
+        ResponseBuilder builder = Response.ok(facts.size());
+        return builder.build();
     }
     
     
@@ -157,12 +157,12 @@ public class RulesMgmtResource {
     @POST
     @Path("/{deploymentId: .*}/rulesLifecycle/")
     public Response testRulesLifecycle(@PathParam("deploymentId") final String deploymentId) {
-    	rProxy.setGlobal(deploymentId, "policyTracker", new StringBuilder());
-    	rProxy.insertFact(deploymentId, new Policy());
-    	int numRulesFired = rProxy.fireAllRules(deploymentId);
-    	rProxy.removeFacts(deploymentId);
-    	ResponseBuilder builder = Response.ok("number of rules Fired = "+numRulesFired+"\n");
-    	return builder.build();
+        rProxy.setGlobal(deploymentId, "policyTracker", new StringBuilder());
+        rProxy.insertFact(deploymentId, new Policy());
+        int numRulesFired = rProxy.fireAllRules(deploymentId);
+        rProxy.removeFacts(deploymentId);
+        ResponseBuilder builder = Response.ok("number of rules Fired = "+numRulesFired+"\n");
+        return builder.build();
     }
 
     /**

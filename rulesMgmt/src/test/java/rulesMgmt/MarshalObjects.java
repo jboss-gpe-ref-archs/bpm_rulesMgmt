@@ -11,21 +11,21 @@ import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
 
 public class MarshalObjects {
 
-	public static void main(String[] args) throws JsonGenerationException, JsonMappingException, IOException {
-		Policy pObj = new Policy();
-		pObj.setPolicyId(5);
-		pObj.setPolicyName("Azra Policy");
-		
-		ObjectMapper jsonMapper = new ObjectMapper();
-		String marshalledString = jsonMapper.writeValueAsString(pObj);
-		System.out.println("main() policy json = "+marshalledString);
-		
-		Policy unmarshalledPObj =jsonMapper.readValue(marshalledString, Policy.class);
-		System.out.println("main() policy obj = "+unmarshalledPObj);
-		
-		PolicyTracker pTracker = new PolicyTracker();
-		pTracker.setProcessedCount(0);
-		System.out.println("main() pTracker = "+jsonMapper.writeValueAsString(pTracker));
-	}
+    public static void main(String[] args) throws JsonGenerationException, JsonMappingException, IOException {
+        Policy pObj = new Policy();
+        pObj.setPolicyId(5);
+        pObj.setPolicyName("Azra Policy");
+        
+        ObjectMapper jsonMapper = new ObjectMapper();
+        String marshalledString = jsonMapper.writeValueAsString(pObj);
+        System.out.println("main() policy json = "+marshalledString);
+        
+        Policy unmarshalledPObj =jsonMapper.readValue(marshalledString, Policy.class);
+        System.out.println("main() policy obj = "+unmarshalledPObj);
+        
+        PolicyTracker pTracker = new PolicyTracker();
+        pTracker.setProcessedCount(0);
+        System.out.println("main() pTracker = "+jsonMapper.writeValueAsString(pTracker));
+    }
 
 }

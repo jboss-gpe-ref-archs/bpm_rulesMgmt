@@ -5,14 +5,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAnyElement;
 
 public class PolicyList<T> {
-	
-	private List<T> items;
-	
-	public PolicyList() {
-		items = new ArrayList<T>();
-	}
-	
-	public PolicyList(List<T> items) {
+    
+    private List<T> items;
+    
+    public PolicyList() {
+        items = new ArrayList<T>();
+    }
+    
+    public PolicyList(List<T> items) {
         this.items = items;
     }
  
