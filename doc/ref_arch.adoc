@@ -1,0 +1,58 @@
+:data-uri:
+:toc2:
+:rhtlink: link:https://www.redhat.com[Red Hat]
+:bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
+:dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
+
+image::images/rhheader.png[width=900]
+
+:numbered!:
+[abstract]
+== Red Hat GPE Reference Architecture:  BPM Rules Management
+
+:numbered:
+
+== Overview
+This reference architecture includes the following directories:
+
+. *domain*
++
+Example application domain model classes used in this reference architecture to demonstrate capability of Rules Management API functionality.
+These example domain model classes contain JAXB annotations for (un)marshalling between its XML and java object representations.
+
+. *interfaces*
++
+Includes an interface that is implemented by the CDI bean that implements Rules Management functionality.
+Also includes an interface that is implemented by an EJB that provides transaction and remoting capabilities to the Rules Management functionality.
+ 
+. *processTier*
++
+Example KIE project that includes a single rule.
+For the purposes of this reference architecture, this KIE project is invoked via the Rules Management API functionality.
+
+. *rulesMgmt*:  Provides the following:
+.. Rules Management CDI bean
++
+Similar to the existing BPM Suite 6 Execution Server, this Rules Management CDI bean is _Deployment Unit_ aware.
+The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object for rule facts and globals.
+
+.. Example application-specific transport API
++
+The Rules Management CDI bean can be wrapped and exposed using a variety of transports.
+A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
+An example RESTful service is provided in this reference architecture.
+This RESTful service is application specific.
+JAXB marshalling and unmarshalling of the included application-specific domain model occurs in this application specific RESTful service.
+It is expected that a user of this reference architecture would customize this RESTful interface or create their own.
+
+== Pre-Requisites
+
+== Set-up
+
+=== Start BPM Suite 6
+=== Log into BPM Suite 6
+
+=== clone *bpm_signalling* repo
+
+=== Deploy *processTier* KIE project
+== To-Do
