@@ -5,9 +5,9 @@ import java.util.Collection;
 
 public interface IRulesMgmt {
     
-	/*
-	 * insert a fact (of any Object type) into the working memory of the rules engine assigned to a specific Deployment Unit
-	 */
+    /*
+     * insert a fact (of any Object type) into the working memory of the rules engine assigned to a specific Deployment Unit
+     */
     public void insertFact(String deploymentId, Object fObject);
     
     /*
