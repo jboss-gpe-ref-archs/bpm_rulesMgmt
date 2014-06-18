@@ -12,5 +12,4 @@ public interface IRulesMgmtService {
     
     public Collection<Serializable> getFacts(String deploymentId);
     public void dumpFacts(String deploymentId);
-    public void dispose(String deploymentId);
 }

@@ -1,13 +1,11 @@
 package com.redhat.gpe.refarch.bpm_rulesMgmt;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -35,6 +33,10 @@ import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy;
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyList;
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
 
+/*
+ * Application specific RESTful API that exposes the functionality provided by the rules management CDI bean.
+ * It's expected that users of this reference architecture will customize this class to support thier application-specific domain model.
+ */
 @Stateless
 @Path("/RulesMgmtResource")
 public class RulesMgmtResource {

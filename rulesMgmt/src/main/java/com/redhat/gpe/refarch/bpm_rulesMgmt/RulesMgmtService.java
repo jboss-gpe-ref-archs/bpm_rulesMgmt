@@ -47,10 +47,6 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.getFacts(deploymentId);
     }
 
-    public void dispose(String deploymentId) {
-        rMgmtBean.dispose(deploymentId);
-    }
-
     public void dumpFacts(String deploymentId) {
         rMgmtBean.dumpFacts(deploymentId);
     }
