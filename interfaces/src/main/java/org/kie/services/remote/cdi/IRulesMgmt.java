@@ -17,6 +17,7 @@ public interface IRulesMgmt {
     
     /*
      * fire all rules on the working memory of the rules engine assigned to a specific Deployment Unit
+     * returns # of rules fired
      */
     public int fireAllRules(String deploymentId);
     
@@ -27,6 +28,7 @@ public interface IRulesMgmt {
     
     /*
      * flush all facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit
+     * returns number of facts flushed from working memory
      */
     public int removeFacts(String deploymentId);
     
