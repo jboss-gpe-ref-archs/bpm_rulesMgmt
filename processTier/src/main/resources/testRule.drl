@@ -12,7 +12,7 @@ rule "testRule"
      int count = pTracker.getProcessedCount();
      count++;
      pTracker.setProcessedCount(count);
-     String statement = "testRule() ... just executed: count = "+count);
+     String statement = "testRule() ... just executed: count = "+count;
      System.out.println(statement);
 end  
 
