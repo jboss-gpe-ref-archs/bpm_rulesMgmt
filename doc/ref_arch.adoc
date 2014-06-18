@@ -3,6 +3,7 @@
 :rhtlink: link:https://www.redhat.com[Red Hat]
 :bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
 :dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
+:irulesmgmt: link:interfaces/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
 
 image::images/rhheader.png[width=900]
 
@@ -13,6 +14,8 @@ image::images/rhheader.png[width=900]
 :numbered:
 
 == Overview
+
+=== Directory Structure
 This reference architecture includes the following directories:
 
 . *domain*
@@ -44,6 +47,20 @@ An example RESTful service is provided in this reference architecture.
 This RESTful service is application specific.
 JAXB marshalling and unmarshalling of the included application-specific domain model occurs in this application specific RESTful service.
 It is expected that a user of this reference architecture would customize this RESTful interface or create their own.
+
+=== Rules Management Topics
+. *Deployment Unit aware*
++ 
+Similar to the existing BPM Suite 6 Execution Server, the Rules Management CDI bean is _Deployment Unit_ aware.
+KIE projects are deployed as per your normal procedures in BPM Suite 6.
+The Rules Management CDI bean manages the rules engine and stateful KIE session assigned to that Deployment Unit.
+KIE Base and KIE Session specifics are configured during creation of the deployment unit.
+
+. *API*
++
+The API provided by the Rules Management CDI bean is straight-forward.
+Details of each function of the API can be found in the {irulesmgmt} interface.
+
 
 == Pre-Requisites
 
