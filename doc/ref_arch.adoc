@@ -3,7 +3,7 @@
 :rhtlink: link:https://www.redhat.com[Red Hat]
 :bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
 :dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
-:irulesmgmt: link:interfaces/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
+:irulesmgmt: link:../interfaces/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
 
 image::images/rhheader.png[width=900]
 
