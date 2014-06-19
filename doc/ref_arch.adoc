@@ -58,24 +58,25 @@ This example KIE project is invoked by remote clients via the rules management A
 .. Rules Management CDI bean
 +
 Similar to the existing BPM Suite 6 Execution Server, this Rules Management CDI bean is _Deployment Unit_ aware.
-The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object for rule facts and globals.
+The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object to insert facts and globals into the working memory of the rules engine.
 
-.. Example application-specific transport API
+.. Example application-specific rules mgmt service
 +
 The Rules Management CDI bean can be wrapped and exposed using a variety of transports.
 A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
-An example RESTful service is provided in this reference architecture.
+In this reference architecture, an example RESTful service is provided.
 This RESTful service is application specific.
-JAXB marshalling and unmarshalling of the included application-specific domain model occurs in this application specific RESTful service.
-It is expected that a user of this reference architecture would customize this RESTful interface or create their own.
+JAXB (un)marshalling of the included application-specific domain model occurs in this application specific RESTful service.
+It is expected that a user of this reference architecture will customize this RESTful interface or create their own.
 
 === Rules Management Topics
 . *Deployment Unit aware*
 + 
 Similar to the existing BPM Suite 6 Execution Server, the Rules Management CDI bean is _Deployment Unit_ aware.
-KIE projects are deployed as per your normal procedures in BPM Suite 6.
-The Rules Management CDI bean manages the rules engine and stateful KIE session assigned to that Deployment Unit.
+KIE projects are deployed as per your normal procedures using BPM Suite 6.
 KIE Base and KIE Session specifics are configured during creation of the deployment unit.
+The Rules Management CDI bean then manages the rules engine assigned to that deployment unit.
+
 
 . *API*
 +
@@ -85,12 +86,41 @@ Details of each function of the API can be found in the {irulesmgmt} interface.
 
 == Pre-Requisites
 
+. Experience with BPM Suite 6 and in particular the rules engine functionality.
+. BPM Suite 6 environment configured to use one its supported relational databases.
+. git
+. maven 3.*
++
+maven should be configured to use the BPM Suite 6 and JBoss EAP 6.1.1 maven repositories.
+
 == Set-up
 
-=== Start BPM Suite 6
-=== Log into BPM Suite 6
+. clone this reference architecture
++
+-----
+git clone https://github.com/jboss-gpe-ref-archs/bpm_rulesMgmt.git
+-----
++
+NOTE:  for the purposes of this reference architecture documentation, this new directory created from having cloned this project will be referred to as: $REF_ARCH_HOME .
 
-=== clone *bpm_signalling* repo
+. build and install this reference architecture
++
+-----
+cd $REF_ARCH_HOME
+mvn clean install -DskipTests
+-----
 
-=== Deploy *processTier* KIE project
+. copy project libraries to _business-central_ web archive
++
+-----
+cp domain/target/bpm_rulesMgmt_domain.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
+cp interfaces/target/bpm_rulesMgmt-interfaces.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
+cp rulesMgmt/target/bpm_rulesMgmt.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
+-----
+
+. start BPM Suite 6
+
+== Test
+
+
 == To-Do
