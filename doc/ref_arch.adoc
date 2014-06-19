@@ -9,7 +9,7 @@ image::images/rhheader.png[width=900]
 
 :numbered!:
 [abstract]
-== Red Hat GPE Reference Architecture:  BPM Rules Management
+= BPM Rules Management
 
 :numbered:
 
