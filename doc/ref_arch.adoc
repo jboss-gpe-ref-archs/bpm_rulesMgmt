@@ -92,6 +92,7 @@ Details of each function of the API can be found in the {irulesmgmt} interface.
 . maven 3.*
 +
 maven should be configured to use the BPM Suite 6 and JBoss EAP 6.1.1 maven repositories.
+. curl
 
 == Set-up
 
@@ -119,8 +120,71 @@ cp rulesMgmt/target/bpm_rulesMgmt.jar $JBOSS_HOME/standalone/deployments/busines
 -----
 
 . start BPM Suite 6
+. clone this reference architecture in BPM Suite 6
+. deploy the _processTier_ KIE project included in this reference architecture.
++ 
+NOTE: the deployment unit id will be:  com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0
 
 == Test
+This reference architecture includes an application specific RESTful interface to manage the rules engine assigned to a Deployment Unit.
+Subsequently, curl will be used in this reference architecture as the client to interact with the application specific RESTful interface.
+Any http client could be used.
+And, obviously, if a different application-specific service were to be implemented (ie:  SOAP) that wraps the rules management CDI bean, then a client specific to that transport would need to be used.
+The following demonstrates various curl commands to interact with the out-of-the-box RESTful service included in this reference architecture:
+
+NOTE:  these examples reference a DNS name of _docker_bpms_.
+_docker_bpms_ is the name of the host where BPM Suite 6 is running.
+Change these commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running
+
+. ensure that REST service properly started:
++
+-----
+curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-central/rest/RulesMgmtResource/sanityCheck
+-----
+
++
+response:  good to go
+
+. insert an application specific global (called: pTracker) into the working memory of the rules engine assigned to a deployment unit:
++
+-----
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyTracker.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/global/pTracker
+-----
+
++
+response:  none.  
+
+. insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to a deployment unit:
++
+-----
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact/
+-----
++
+response: none.
+
+. fire all rules included in the working memory of the rules engine assigned to a deployment unit
++
+-----
+curl -v -u jboss:brms -X POST docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fireAllRules
+-----
++
+response:  number of rules fired
+
+. retrieve previously inserted _policy_ facts from the working memory of the rules engine assigned to a deployment unit
++
+-----
+curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+-----
++
+response: list of _policy_ facts in xml representation
+
+. delete all previously inserted _policy_ facts from the working memory of the rules engine assigned to a deployment unit
++
+----
+curl -v -u jboss:brms -X DELETE docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+----
++
+response: number of facts deleted
 
 
 == To-Do
