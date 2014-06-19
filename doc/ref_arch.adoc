@@ -44,12 +44,15 @@ This reference architecture includes an {irulesmgmt} interface.
 This IRulesMgmt interface is implemented by a CDI bean that manages the rules engine assigned to a _Deployment Unit_ .
 The IRulesMgmt interface and CDI bean implementation are generic and should not require customization.
 
-This reference architecture also includes an interface that is implemented by an EJB that wraps transaction and remoting capabilties around the CDI Rules Management functionality.
++
+This reference architecture also includes an {irulesmgmtservice} interface.
+Its implementation is an EJB that wraps transaction and remoting capabilties around the core rules management CDI bean.
+This IRulesMgmtService is also generic and should not require customization.
  
-. *processTier*
+. *processTier*
 +
 Example KIE project that includes a single rule.
-For the purposes of this reference architecture, this KIE project is invoked via the Rules Management API functionality.
+This example KIE project is invoked by remote clients via the rules management API functionality provided in this reference architecture.
 
 . *rulesMgmt*:  Provides the following:
 .. Rules Management CDI bean
