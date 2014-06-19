@@ -12,4 +12,4 @@ The purpose of this reference architecture is to provide a Rules Management API 
 BPM Suite 6 currently provides an _Execution Server_ that allows for remote invocation of its process engine.
 It does not however currently provide an API that allows for remote invocation of its rule engine.
 
-This reference architecture includes a BPM Suite 6 _KIE project_ and {ref_arch_doc} .
+This reference architecture includes a {ref_arch_doc} .
