@@ -4,6 +4,7 @@
 :bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
 :dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
 :irulesmgmt: link:../interfaces/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
+:irulesmgmtservice: link:../interfaces/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
 
 image::images/rhheader.png[width=900]
 
@@ -14,6 +15,17 @@ image::images/rhheader.png[width=900]
 :numbered:
 
 == Overview
+Red Hat's Business Process Management (BPM) Suite 6 product is a super-set of it's Business Rules Management (BRM) Suite 6 product.
+As such both products include a rules engine (based on technology from the open-source Drools community projects).
+BPM Suite 6 includes an _Execution Server_ that allows for remote invocation of its process engine only.
+The BPM Suite 6 Execution Server does not allow for remote invocation of its rules engine.
+
+The purpose of this reference architecture is to provide a remoteable API to invoke the rules engine of BPM Suite 6.
+
+There are several components to the example solution provided in this reference architecture.
+Some of the components are generic and should not need additional customization.
+Other components are application specific and will require customization.
+As you are going through this reference architecture, please pay particular attention to those components that require customization on your part.
 
 === Directory Structure
 This reference architecture includes the following directories:
@@ -22,11 +34,17 @@ This reference architecture includes the following directories:
 +
 Example application domain model classes used in this reference architecture to demonstrate capability of Rules Management API functionality.
 These example domain model classes contain JAXB annotations for (un)marshalling between its XML and java object representations.
+JAXB annotations in your domain model are not a requirement.
+The end-state is the ability to (un)marshall your domain model classes so as to be used as _facts_ and _globals_ in the working memory of the BPM Suite 6 rules engine.
+As an application developer, you are responsible for how your domain model is best (un)marshalled to/from its Java object representation.
 
 . *interfaces*
 +
-Includes an interface that is implemented by the CDI bean that implements Rules Management functionality.
-Also includes an interface that is implemented by an EJB that provides transaction and remoting capabilities to the Rules Management functionality.
+This reference architecture includes an {irulesmgmt} interface.
+This IRulesMgmt interface is implemented by a CDI bean that manages the rules engine assigned to a _Deployment Unit_ .
+The IRulesMgmt interface and CDI bean implementation are generic and should not require customization.
+
+This reference architecture also includes an interface that is implemented by an EJB that wraps transaction and remoting capabilties around the CDI Rules Management functionality.
  
 . *processTier*
 +
