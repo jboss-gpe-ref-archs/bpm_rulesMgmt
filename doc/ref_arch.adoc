@@ -136,18 +136,31 @@ NOTE: the deployment unit id will be:  com.redhat.gpe.refarch.bpm_rulesMgmt:proc
 
 == Test
 This reference architecture includes an application specific RESTful interface to manage the rules engine assigned to a Deployment Unit.
-Subsequently, curl will be used in this reference architecture as the client to interact with the application specific RESTful interface.
-Any http client could be used.
-And, obviously, if a different application-specific service were to be implemented (ie:  SOAP) that wraps the rules management CDI bean, then a client specific to that transport would need to be used.
-The following demonstrates various curl commands to interact with the out-of-the-box RESTful service included in this reference architecture:
 
-NOTE:  
-The following examples reference a DNS name of *docker_bpms*.
-In these examples, _docker_bpms_ is the name of the host where BPM Suite 6 is running.
-Customize these commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running. 
-Also, the following examples reference a curl command-line parameter of:  *-u jboss:brms* .
-In these examples, jboss:brms is the userId:password used by the curl utility to authenticate to the _business-central_ web archive of BPM Suite 6.
-Customize the value of -u userId:password so that curl can authenticate to your BPM Suite 6 environment.
+=== Test Details
+
+. *curl*
++
+Because this reference architecture provides an example RESTful interface, the command line curl utility is used to show-case this RESTful API.
+Any http client that allows for GET, POST and DELETE functions can be used, however.
+
+. *docker_bpms*
++
+The test examples reference a DNS name of:  _docker_bpms_.
+_docker_bpms_ is the name of the host where BPM Suite 6 is running.
+You will want to customize these example commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running. 
+
+. *BPM Suite 6 BASIC Auth*
++
+The test examples reference a curl command-line parameter of:  *-u jboss:brms* .
+_ jboss:brms_  is the userId:password used by the curl utility to authenticate to the _business-central_ web archive of BPM Suite 6.
+You will want to customize the value of -u userId:password so that curl can authenticate to your BPM Suite 6 environment.
+
+. *Directory from which to execute the test commands*
++
+The test examples assume that they are being executed from the root directory of this reference architecture.
+
+=== Sample Test Commands
 
 . ensure that REST service properly started:
 +
