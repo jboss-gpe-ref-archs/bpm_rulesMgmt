@@ -183,6 +183,14 @@ curl -v -u jboss:brms -X POST docker_bpms:8080/business-central/rest/RulesMgmtRe
 +
 response:  number of rules fired
 
+. get a count of all facts from the working memory of the rules engine assigned to deployment unit
++
+-----
+curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts/count
+-----
++
+response:  integer count of facts
+
 . retrieve all _policy_ facts from the working memory of the rules engine assigned to a deployment unit
 +
 -----
