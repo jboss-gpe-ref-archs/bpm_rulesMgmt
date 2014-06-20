@@ -165,6 +165,20 @@ public class RulesMgmtResource {
         return builder.build();
     }
     
+    /**
+     * sample usage :
+     *  curl -v -u jboss:brms -X DELETE -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
+     */
+    @DELETE
+    @Path("/{deploymentId: .*}/fact")
+    @Consumes({"application/xml"})
+    @Produces({ "text/plain" })
+    public Response removeFact(@PathParam("deploymentId") final String deploymentId,  DefaultFactHandle fHandle) {
+        int factsRemoved = rProxy.removeFact(deploymentId, fHandle);
+        ResponseBuilder builder = Response.ok(factsRemoved);
+        return builder.build();
+    }
+    
     
     /**
      * sample usage :

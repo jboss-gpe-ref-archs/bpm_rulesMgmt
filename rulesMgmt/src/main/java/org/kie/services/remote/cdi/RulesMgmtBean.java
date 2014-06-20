@@ -59,10 +59,10 @@ public class RulesMgmtBean implements IRulesMgmt {
         return kSession.fireAllRules();
     }
     
-	public Collection getFactHandles(String deploymentId) {
-		KieSession kSession = getKieSession(deploymentId);
+    public Collection getFactHandles(String deploymentId) {
+        KieSession kSession = getKieSession(deploymentId);
         return kSession.getFactHandles();
-	}
+    }
 
     
     // returns facts;  typically want to invoke this after having invoked:  fireAllRules
@@ -108,6 +108,18 @@ public class RulesMgmtBean implements IRulesMgmt {
         return factCount;
     }
     
+    public int removeFact(String deploymentId, FactHandle fHandle) {
+        KieSession kSession = getKieSession(deploymentId);
+        Object fObj = kSession.getObject(fHandle);
+        if(fObj != null){
+            kSession.delete(fHandle);
+            return 1;
+        } else {
+            logger.warn("removeFact() following fact not found: "+fHandle);
+            return 0;
+        }
+    }
+    
     // dumps inventory of facts to log file
     public void dumpFacts(String deploymentId) {
         KieSession kSession = getKieSession(deploymentId);
@@ -149,6 +161,6 @@ public class RulesMgmtBean implements IRulesMgmt {
         
     }
 
-	
+    
     
 }

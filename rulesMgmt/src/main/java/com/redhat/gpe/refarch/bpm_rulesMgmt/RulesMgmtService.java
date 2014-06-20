@@ -46,7 +46,7 @@ public class RulesMgmtService implements IRulesMgmtService {
     }
 
     public Collection getFactHandles(String deploymentId) {
-    	return rMgmtBean.getFactHandles(deploymentId);
+        return rMgmtBean.getFactHandles(deploymentId);
     }
     
     public Collection<Serializable> getFacts(String deploymentId) {
@@ -61,12 +61,17 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.getFact(deploymentId, fHandle);
     }
 
+    public int removeFacts(String deploymentId) {
+        return rMgmtBean.removeFacts(deploymentId);
+    }
+    
+    public int removeFact(String deploymentId, FactHandle fHandle){
+        return rMgmtBean.removeFact(deploymentId, fHandle);
+    }
+    
     public void dumpFacts(String deploymentId) {
         rMgmtBean.dumpFacts(deploymentId);
     }
     
-    public int removeFacts(String deploymentId) {
-        return rMgmtBean.removeFacts(deploymentId);
-    }
 
 }

@@ -235,7 +235,15 @@ response: xml representation of a _policy_ fact
 curl -v -u jboss:brms -X DELETE docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
 ----
 +
-response: number of facts deleted
+response: integer count of facts deleted
+
+. given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
++
+-----
+curl -v -u jboss:brms -X DELETE -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
+-----
++
+response: integer count of facts deleted (1 if fact was removed, 0 if fact is not found)
 
 . get a count of all facts from the working memory of the rules engine assigned to deployment unit
 +

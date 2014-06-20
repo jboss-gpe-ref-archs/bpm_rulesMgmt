@@ -26,7 +26,7 @@ public interface IRulesMgmt {
     public int fireAllRules(String deploymentId);
     
     /*
-     * return the Collection of all factHandles that reference facts presently in the working memory of the rules engine assigned to a specific Deployment Unit
+     * return Collection of factHandles of all the facts presently in the working memory of the rules engine assigned to a specific Deployment Unit
      */
     public Collection getFactHandles(String deploymentId);
     
@@ -47,9 +47,16 @@ public interface IRulesMgmt {
     
     /*
      * flush all facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit
-     * returns number of facts flushed from working memory
+     * returns number of facts flushed from working memory 
      */
     public int removeFacts(String deploymentId);
+    
+
+    /*
+     * given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
+     * returns number of facts flushed from working memory (1 if fact was removed, 0 if fact is not found)
+     */
+    public int removeFact(String deploymentId, FactHandle fHandle);
     
     /*
      * log details of facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit

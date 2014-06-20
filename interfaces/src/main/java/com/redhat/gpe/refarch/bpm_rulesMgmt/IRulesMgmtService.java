@@ -15,7 +15,8 @@ public interface IRulesMgmtService {
     public Collection<Serializable> getFacts(String deploymentId);
     public Collection<Serializable> getFacts(String deploymentId, List<FactHandle> fHandles);
     public Object getFact(String deploymentId, FactHandle fHandle);
-    
     public int removeFacts(String deploymentId);
+    public int removeFact(String deployment, FactHandle fHandle);
+    
     public void dumpFacts(String deploymentId);
 }
