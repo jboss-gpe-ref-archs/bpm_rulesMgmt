@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
@@ -42,9 +40,10 @@ public class RulesMgmtBean implements IRulesMgmt {
         logger.info("start");
     }
     
-    public void insertFact(String deploymentId, Object fObject){
+    public FactHandle insertFact(String deploymentId, Object fObject){
         KieSession kSession = getKieSession(deploymentId);
-        kSession.insert(fObject);
+        FactHandle fHandle = kSession.insert(fObject);
+        return fHandle;
     }
     
     public void setGlobal(String deploymentId, String identifier, Object gObject) {
@@ -69,6 +68,11 @@ public class RulesMgmtBean implements IRulesMgmt {
             serializedCollection.add((Serializable)iCollection.next());
         }
         return serializedCollection;
+    }
+    
+    public Object getFact(String deploymentId, FactHandle fHandle) {
+    	KieSession kSession = getKieSession(deploymentId);
+    	return kSession.getObject(fHandle);
     }
     
     public int removeFacts(String deploymentId) {

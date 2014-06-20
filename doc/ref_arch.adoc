@@ -132,9 +132,14 @@ Any http client could be used.
 And, obviously, if a different application-specific service were to be implemented (ie:  SOAP) that wraps the rules management CDI bean, then a client specific to that transport would need to be used.
 The following demonstrates various curl commands to interact with the out-of-the-box RESTful service included in this reference architecture:
 
-NOTE:  these examples reference a DNS name of _docker_bpms_.
-_docker_bpms_ is the name of the host where BPM Suite 6 is running.
-Change these commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running
+NOTE:  
+The following examples reference a DNS name of _docker_bpms_.
+In these examples, _docker_bpms_ is the name of the host where BPM Suite 6 is running.
+Customize these commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running
+
+Also, the following examples reference a curl command-line parameter of:  *-u jboss:brms* .
+In these examples, jboss:brms is the userId:password used by the curl utility to authenticate to the _business-central_ web archive of BPM Suite 6.
+Customize the value of -u userId:password so that curl can authenticate to your BPM Suite 6 environment.
 
 . ensure that REST service properly started:
 +

@@ -3,12 +3,15 @@ package org.kie.services.remote.cdi;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.kie.api.runtime.rule.FactHandle;
+
 public interface IRulesMgmt {
     
     /*
      * insert a fact (of any Object type) into the working memory of the rules engine assigned to a specific Deployment Unit
+     * returns the FactHandle for this fact
      */
-    public void insertFact(String deploymentId, Object fObject);
+    public FactHandle insertFact(String deploymentId, Object fObject);
     
     /*
      * insert a global (of any Object type) into the working memory of the rules engine assigned to a specific Deployment Unit
@@ -25,6 +28,11 @@ public interface IRulesMgmt {
      * return a Collection of facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit
      */
     public Collection<Serializable> getFacts(String deploymentId);
+    
+    /*
+     * return from the working memory of the rules engine assigned to a specific Deployment Unit the fact corresponding to a fact handle
+     */
+    public Object getFact(String deploymentId, FactHandle fHandle);
     
     /*
      * flush all facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit

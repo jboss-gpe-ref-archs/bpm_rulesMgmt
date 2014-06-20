@@ -13,6 +13,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
+import org.kie.api.runtime.rule.FactHandle;
 import org.kie.services.remote.cdi.IRulesMgmt;
 
 
@@ -31,8 +32,8 @@ public class RulesMgmtService implements IRulesMgmtService {
     private IRulesMgmt rMgmtBean;
 
 
-    public void insertFact(String deploymentId, Object fObject) {
-        rMgmtBean.insertFact(deploymentId, fObject);
+    public FactHandle insertFact(String deploymentId, Object fObject) {
+        return rMgmtBean.insertFact(deploymentId, fObject);
     }
 
     public void setGlobal(String deploymentId, String identifier, Object gObject) {
@@ -45,6 +46,10 @@ public class RulesMgmtService implements IRulesMgmtService {
 
     public Collection<Serializable> getFacts(String deploymentId) {
         return rMgmtBean.getFacts(deploymentId);
+    }
+    
+    public Object getFact(String deploymentId, FactHandle fHandle){
+    	return rMgmtBean.getFact(deploymentId, fHandle);
     }
 
     public void dumpFacts(String deploymentId) {

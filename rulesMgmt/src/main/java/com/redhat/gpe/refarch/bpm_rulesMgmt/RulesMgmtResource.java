@@ -26,6 +26,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 
+import org.drools.core.common.DefaultFactHandle;
+import org.kie.api.runtime.rule.FactHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +55,13 @@ public class RulesMgmtResource {
     @POST
     @Path("/{deploymentId: .*}/fact")
     @Consumes({"application/json","application/xml"})
-    @Produces({ "text/plain" })
+    @Produces({ "application/xml" })
     public Response insertFact(@PathParam("deploymentId") final String deploymentId, Policy pObj) {
-        rProxy.insertFact(deploymentId, pObj);
-        ResponseBuilder builder = Response.ok();
+        DefaultFactHandle fHandle = (DefaultFactHandle)rProxy.insertFact(deploymentId, pObj);
+        ResponseBuilder builder = marshallObject(DefaultFactHandle.class, fHandle);
         return builder.build();
     }
+   
     
     /**
      * sample usage :
@@ -140,6 +143,22 @@ public class RulesMgmtResource {
     
     /**
      * sample usage :
+     *  curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
+     */
+    @GET
+    @Path("/{deploymentId: .*}/fact")
+    @Consumes({"application/xml"})
+    @Produces({ "application/xml" })
+    public Response getFact(@PathParam("deploymentId") final String deploymentId, DefaultFactHandle fHandle) {
+    	log.info("getFact() fHandle = "+fHandle);
+    	Object fact = rProxy.getFact(deploymentId, fHandle);
+    	ResponseBuilder builder = marshallObject(Policy.class, fact);
+    	return builder.build();
+    }
+    
+    
+    /**
+     * sample usage :
      *  curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts/count
      */
     @GET
@@ -179,4 +198,32 @@ public class RulesMgmtResource {
         return builder.build();
     }
 
+    private ResponseBuilder marshallObject(Class classObj, Object obj) {
+    	ResponseBuilder builder = null;
+    	if(obj == null)
+    		builder = Response.status(Status.NOT_FOUND);
+    	else {
+    		JAXBContext jc;
+    		Writer sWriter = null;
+    		try {
+    			jc = JAXBContext.newInstance(classObj);
+    			Marshaller marshaller = jc.createMarshaller();
+    			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+    			sWriter = new StringWriter();
+    			marshaller.marshal(obj, sWriter);
+    			builder = Response.ok(sWriter.toString());
+    		} catch (JAXBException e) {
+    			e.printStackTrace();
+    			builder = Response.status(Status.INTERNAL_SERVER_ERROR);
+    		}finally {
+    			try {
+    				if(sWriter != null)
+    					sWriter.close();
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
+    		}
+    	}
+    	return builder;
+    }
 }
