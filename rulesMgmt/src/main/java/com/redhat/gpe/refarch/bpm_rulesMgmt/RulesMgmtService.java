@@ -2,6 +2,7 @@ package com.redhat.gpe.refarch.bpm_rulesMgmt;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Lock;
@@ -48,6 +49,10 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.getFacts(deploymentId);
     }
     
+    public Collection<Serializable> getFacts(String deploymentId, List<FactHandle> fHandles) {
+        return rMgmtBean.getFacts(deploymentId, fHandles);
+    }
+    
     public Object getFact(String deploymentId, FactHandle fHandle){
         return rMgmtBean.getFact(deploymentId, fHandle);
     }
@@ -59,4 +64,5 @@ public class RulesMgmtService implements IRulesMgmtService {
     public int removeFacts(String deploymentId) {
         return rMgmtBean.removeFacts(deploymentId);
     }
+
 }

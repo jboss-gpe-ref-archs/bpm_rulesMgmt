@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy;
-import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyList;
+import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.ObjectList;
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
 
 /*
@@ -42,6 +42,8 @@ import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
 @Stateless
 @Path("/RulesMgmtResource")
 public class RulesMgmtResource {
+
+    private static final String FACT_LIST = "factList";
 
     @EJB(lookup="java:global/business-central/rulesMgmtService!com.redhat.gpe.refarch.bpm_rulesMgmt.IRulesMgmtService")
     IRulesMgmtService rProxy;
@@ -58,8 +60,7 @@ public class RulesMgmtResource {
     @Produces({ "application/xml" })
     public Response insertFact(@PathParam("deploymentId") final String deploymentId, Policy pObj) {
         DefaultFactHandle fHandle = (DefaultFactHandle)rProxy.insertFact(deploymentId, pObj);
-        ResponseBuilder builder = marshallObject(DefaultFactHandle.class, fHandle);
-        return builder.build();
+        return marshallObject(DefaultFactHandle.class, fHandle);
     }
    
     
@@ -112,34 +113,22 @@ public class RulesMgmtResource {
     @Produces({ "application/xml" })
     public Response getFacts(@PathParam("deploymentId") final String deploymentId) {
         Collection<Serializable> facts = rProxy.getFacts(deploymentId);
-        List fList = new ArrayList(facts);
-        PolicyList pList = new PolicyList(fList);
-        JAXBContext jc;
-        ResponseBuilder builder = null;
-        Writer sWriter = null;
-        try {
-            jc = JAXBContext.newInstance(PolicyList.class, Policy.class);
-            Marshaller marshaller = jc.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            QName qName = new QName("policyList");
-            JAXBElement<PolicyList> jaxbElement = new JAXBElement<PolicyList>(qName, PolicyList.class, pList);
-            //marshaller.marshal(jaxbElement, System.out);
-            sWriter = new StringWriter();
-            marshaller.marshal(jaxbElement, sWriter);
-            builder = Response.ok(sWriter.toString());
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            builder = Response.status(Status.INTERNAL_SERVER_ERROR);
-        }finally {
-                try {
-                    if(sWriter != null)
-                       sWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-        }
-        return builder.build();
+        return marshalList(facts, FACT_LIST, Policy.class);
     }
+    
+   /*
+    *  curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+    */
+   @GET
+   @Path("/{deploymentId: .*}/facts")
+   @Consumes({"application/xml"})
+   @Produces({ "application/xml" })
+   public Response getFacts(@PathParam("deploymentId") final String deploymentId, ObjectList<FactHandle> fHandles) {
+       log.info("getFacts() # of fact handles = "+fHandles.getItems().size());
+       Collection<Serializable> facts = rProxy.getFacts(deploymentId, fHandles.getItems());
+       return marshalList(facts, FACT_LIST, Policy.class);
+   }
+    
     
     /**
      * sample usage :
@@ -152,8 +141,7 @@ public class RulesMgmtResource {
     public Response getFact(@PathParam("deploymentId") final String deploymentId, DefaultFactHandle fHandle) {
         log.info("getFact() fHandle = "+fHandle);
         Object fact = rProxy.getFact(deploymentId, fHandle);
-        ResponseBuilder builder = marshallObject(Policy.class, fact);
-        return builder.build();
+        return marshallObject(Policy.class, fact);
     }
     
     
@@ -198,7 +186,7 @@ public class RulesMgmtResource {
         return builder.build();
     }
 
-    private ResponseBuilder marshallObject(Class classObj, Object obj) {
+    private Response marshallObject(Class classObj, Object obj) {
         ResponseBuilder builder = null;
         if(obj == null)
             builder = Response.status(Status.NOT_FOUND);
@@ -224,6 +212,40 @@ public class RulesMgmtResource {
                 }
             }
         }
-        return builder;
+        return builder.build();
+    }
+    
+    private Response marshalList(Collection<Serializable> objects, String jaxbListName, Class objectClassType) {
+        ResponseBuilder builder = null;
+        if(objects.isEmpty())
+            builder = Response.status(Status.NOT_FOUND);
+        else {
+            List fList = new ArrayList(objects);
+            ObjectList pList = new ObjectList(fList);
+            JAXBContext jc;
+            Writer sWriter = null;
+            try {
+                jc = JAXBContext.newInstance(ObjectList.class, objectClassType);
+                Marshaller marshaller = jc.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                QName qName = new QName(jaxbListName);
+                JAXBElement<ObjectList> jaxbElement = new JAXBElement<ObjectList>(qName, ObjectList.class, pList);
+                //marshaller.marshal(jaxbElement, System.out);
+                sWriter = new StringWriter();
+                marshaller.marshal(jaxbElement, sWriter);
+                builder = Response.ok(sWriter.toString());
+            } catch (JAXBException e) {
+                e.printStackTrace();
+                builder = Response.status(Status.INTERNAL_SERVER_ERROR);
+            }finally {
+                try {
+                    if(sWriter != null)
+                        sWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return builder.build();
     }
 }

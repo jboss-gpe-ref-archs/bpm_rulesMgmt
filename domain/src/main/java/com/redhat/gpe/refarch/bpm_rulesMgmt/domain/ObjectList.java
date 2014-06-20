@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAnyElement;
 
-public class PolicyList<T> {
+public class ObjectList<T> {
     
     private List<T> items;
     
-    public PolicyList() {
+    public ObjectList() {
         items = new ArrayList<T>();
     }
     
-    public PolicyList(List<T> items) {
+    public ObjectList(List<T> items) {
         this.items = items;
     }
  

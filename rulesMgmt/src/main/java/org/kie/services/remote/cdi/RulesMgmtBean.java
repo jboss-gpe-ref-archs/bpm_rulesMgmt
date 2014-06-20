@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
@@ -70,6 +72,19 @@ public class RulesMgmtBean implements IRulesMgmt {
         return serializedCollection;
     }
     
+    public Collection<Serializable> getFacts(String deploymentId, List<FactHandle> fHandles) {
+        KieSession kSession = getKieSession(deploymentId);
+        Collection<Serializable> serializedCollection = new ArrayList<Serializable>();
+        for(FactHandle fHandle : fHandles){
+            Object fObj = kSession.getObject(fHandle);
+            if(fObj == null)
+                logger.warn("getFacts() fact not found for : "+fHandle);
+            else
+                serializedCollection.add((Serializable)fObj);
+        }
+        return serializedCollection;
+    }
+    
     public Object getFact(String deploymentId, FactHandle fHandle) {
         KieSession kSession = getKieSession(deploymentId);
         return kSession.getObject(fHandle);
@@ -127,5 +142,6 @@ public class RulesMgmtBean implements IRulesMgmt {
         logger.info("destroy");
         
     }
+
     
 }
