@@ -71,8 +71,8 @@ public class RulesMgmtBean implements IRulesMgmt {
     }
     
     public Object getFact(String deploymentId, FactHandle fHandle) {
-    	KieSession kSession = getKieSession(deploymentId);
-    	return kSession.getObject(fHandle);
+        KieSession kSession = getKieSession(deploymentId);
+        return kSession.getObject(fHandle);
     }
     
     public int removeFacts(String deploymentId) {

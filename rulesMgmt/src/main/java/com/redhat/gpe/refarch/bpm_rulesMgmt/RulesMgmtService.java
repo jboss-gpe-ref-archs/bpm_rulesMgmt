@@ -49,7 +49,7 @@ public class RulesMgmtService implements IRulesMgmtService {
     }
     
     public Object getFact(String deploymentId, FactHandle fHandle){
-    	return rMgmtBean.getFact(deploymentId, fHandle);
+        return rMgmtBean.getFact(deploymentId, fHandle);
     }
 
     public void dumpFacts(String deploymentId) {

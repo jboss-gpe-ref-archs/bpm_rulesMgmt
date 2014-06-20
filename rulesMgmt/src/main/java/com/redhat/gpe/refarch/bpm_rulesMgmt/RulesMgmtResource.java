@@ -150,10 +150,10 @@ public class RulesMgmtResource {
     @Consumes({"application/xml"})
     @Produces({ "application/xml" })
     public Response getFact(@PathParam("deploymentId") final String deploymentId, DefaultFactHandle fHandle) {
-    	log.info("getFact() fHandle = "+fHandle);
-    	Object fact = rProxy.getFact(deploymentId, fHandle);
-    	ResponseBuilder builder = marshallObject(Policy.class, fact);
-    	return builder.build();
+        log.info("getFact() fHandle = "+fHandle);
+        Object fact = rProxy.getFact(deploymentId, fHandle);
+        ResponseBuilder builder = marshallObject(Policy.class, fact);
+        return builder.build();
     }
     
     
@@ -199,31 +199,31 @@ public class RulesMgmtResource {
     }
 
     private ResponseBuilder marshallObject(Class classObj, Object obj) {
-    	ResponseBuilder builder = null;
-    	if(obj == null)
-    		builder = Response.status(Status.NOT_FOUND);
-    	else {
-    		JAXBContext jc;
-    		Writer sWriter = null;
-    		try {
-    			jc = JAXBContext.newInstance(classObj);
-    			Marshaller marshaller = jc.createMarshaller();
-    			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    			sWriter = new StringWriter();
-    			marshaller.marshal(obj, sWriter);
-    			builder = Response.ok(sWriter.toString());
-    		} catch (JAXBException e) {
-    			e.printStackTrace();
-    			builder = Response.status(Status.INTERNAL_SERVER_ERROR);
-    		}finally {
-    			try {
-    				if(sWriter != null)
-    					sWriter.close();
-    			} catch (IOException e) {
-    				e.printStackTrace();
-    			}
-    		}
-    	}
-    	return builder;
+        ResponseBuilder builder = null;
+        if(obj == null)
+            builder = Response.status(Status.NOT_FOUND);
+        else {
+            JAXBContext jc;
+            Writer sWriter = null;
+            try {
+                jc = JAXBContext.newInstance(classObj);
+                Marshaller marshaller = jc.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                sWriter = new StringWriter();
+                marshaller.marshal(obj, sWriter);
+                builder = Response.ok(sWriter.toString());
+            } catch (JAXBException e) {
+                e.printStackTrace();
+                builder = Response.status(Status.INTERNAL_SERVER_ERROR);
+            }finally {
+                try {
+                    if(sWriter != null)
+                        sWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return builder;
     }
 }
