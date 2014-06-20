@@ -45,6 +45,10 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.fireAllRules(deploymentId);
     }
 
+    public Collection getFactHandles(String deploymentId) {
+    	return rMgmtBean.getFactHandles(deploymentId);
+    }
+    
     public Collection<Serializable> getFacts(String deploymentId) {
         return rMgmtBean.getFacts(deploymentId);
     }

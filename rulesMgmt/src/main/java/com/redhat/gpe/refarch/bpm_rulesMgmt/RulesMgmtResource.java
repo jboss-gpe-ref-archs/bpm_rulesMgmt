@@ -1,6 +1,7 @@
 package com.redhat.gpe.refarch.bpm_rulesMgmt;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -24,10 +25,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.drools.core.common.DefaultFactHandle;
-import org.kie.api.runtime.rule.FactHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +47,7 @@ import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
 public class RulesMgmtResource {
 
     private static final String FACT_LIST = "factList";
+    private static final String FACT_HANDLE_LIST = "factHandleList";
 
     @EJB(lookup="java:global/business-central/rulesMgmtService!com.redhat.gpe.refarch.bpm_rulesMgmt.IRulesMgmtService")
     IRulesMgmtService rProxy;
@@ -91,18 +95,20 @@ public class RulesMgmtResource {
         return builder.build();
     }
     
+    
     /**
      * sample usage :
-     *  curl -v -u jboss:brms -X DELETE docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+     *  curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/factHandles
      */
-    @DELETE
-    @Path("/{deploymentId: .*}/facts")
-    @Produces({ "text/plain" })
-    public Response removeFacts(@PathParam("deploymentId") final String deploymentId) {
-        int factsRemoved = rProxy.removeFacts(deploymentId);
-        ResponseBuilder builder = Response.ok(factsRemoved);
-        return builder.build();
+    @GET
+    @Path("/{deploymentId: .*}/factHandles")
+    @Produces({ "application/xml" })
+    public Response getAllFactHandles(@PathParam("deploymentId") final String deploymentId) {
+        Collection factHandles = rProxy.getFactHandles(deploymentId);
+        log.info("getFacts() # of fact handles = "+factHandles.size());
+        return marshalList(factHandles, FACT_HANDLE_LIST, DefaultFactHandle.class);
     }
+    
     
     /**
      * sample usage :
@@ -111,24 +117,26 @@ public class RulesMgmtResource {
     @GET
     @Path("/{deploymentId: .*}/facts")
     @Produces({ "application/xml" })
-    public Response getFacts(@PathParam("deploymentId") final String deploymentId) {
+    public Response getAllFacts(@PathParam("deploymentId") final String deploymentId) {
         Collection<Serializable> facts = rProxy.getFacts(deploymentId);
+        log.info("getAllFacts() # of fact handles = "+facts.size());
         return marshalList(facts, FACT_LIST, Policy.class);
     }
     
    /*
-    *  curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+    *  curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandles.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
     */
    @GET
    @Path("/{deploymentId: .*}/facts")
    @Consumes({"application/xml"})
    @Produces({ "application/xml" })
-   public Response getFacts(@PathParam("deploymentId") final String deploymentId, ObjectList<FactHandle> fHandles) {
-       log.info("getFacts() # of fact handles = "+fHandles.getItems().size());
-       Collection<Serializable> facts = rProxy.getFacts(deploymentId, fHandles.getItems());
+   public Response getFacts(@PathParam("deploymentId") final String deploymentId, InputStream fHandleStream) {
+       List fHandles = unmarshalList(DefaultFactHandle.class, fHandleStream);
+       log.info("getFacts() # of fact handles = "+fHandles.size());
+       Collection<Serializable> facts = rProxy.getFacts(deploymentId, fHandles);
        return marshalList(facts, FACT_LIST, Policy.class);
    }
-    
+   
     
     /**
      * sample usage :
@@ -142,6 +150,19 @@ public class RulesMgmtResource {
         log.info("getFact() fHandle = "+fHandle);
         Object fact = rProxy.getFact(deploymentId, fHandle);
         return marshallObject(Policy.class, fact);
+    }
+    
+    /**
+     * sample usage :
+     *  curl -v -u jboss:brms -X DELETE docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+     */
+    @DELETE
+    @Path("/{deploymentId: .*}/facts")
+    @Produces({ "text/plain" })
+    public Response removeFacts(@PathParam("deploymentId") final String deploymentId) {
+        int factsRemoved = rProxy.removeFacts(deploymentId);
+        ResponseBuilder builder = Response.ok(factsRemoved);
+        return builder.build();
     }
     
     
@@ -217,7 +238,7 @@ public class RulesMgmtResource {
     
     private Response marshalList(Collection<Serializable> objects, String jaxbListName, Class objectClassType) {
         ResponseBuilder builder = null;
-        if(objects.isEmpty())
+        if(objects == null || objects.isEmpty())
             builder = Response.status(Status.NOT_FOUND);
         else {
             List fList = new ArrayList(objects);
@@ -248,4 +269,22 @@ public class RulesMgmtResource {
         }
         return builder.build();
     }
+    
+    private <T> List<T> unmarshalList(Class<T> clazz, InputStream iStream) {
+        JAXBContext jc;
+        Writer sWriter = null;
+        ObjectList<T> objectList = null;
+        Source iSource = null;
+        try {
+            iSource = new StreamSource(iStream);
+            jc = JAXBContext.newInstance(ObjectList.class, clazz);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            objectList = (ObjectList<T>) unmarshaller.unmarshal(iSource, ObjectList.class).getValue();
+        }catch(Exception x){
+            x.printStackTrace();
+            objectList = new ObjectList();
+        }
+        return objectList.getItems();
+    }
 }
+

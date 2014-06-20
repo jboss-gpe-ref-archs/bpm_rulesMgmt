@@ -26,6 +26,11 @@ public interface IRulesMgmt {
     public int fireAllRules(String deploymentId);
     
     /*
+     * return the Collection of all factHandles that reference facts presently in the working memory of the rules engine assigned to a specific Deployment Unit
+     */
+    public Collection getFactHandles(String deploymentId);
+    
+    /*
      * return the Collection of all facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit
      */
     public Collection<Serializable> getFacts(String deploymentId);

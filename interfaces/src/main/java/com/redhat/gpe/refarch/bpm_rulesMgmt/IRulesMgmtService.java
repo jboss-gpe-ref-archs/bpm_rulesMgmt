@@ -11,7 +11,7 @@ public interface IRulesMgmtService {
     public FactHandle insertFact(String deploymentId, Object fObject);
     public void setGlobal(String deploymentId, String identifier, Object gObject);
     public int fireAllRules(String deploymentId);
-    
+    public Collection getFactHandles(String deploymentId);
     public Collection<Serializable> getFacts(String deploymentId);
     public Collection<Serializable> getFacts(String deploymentId, List<FactHandle> fHandles);
     public Object getFact(String deploymentId, FactHandle fHandle);

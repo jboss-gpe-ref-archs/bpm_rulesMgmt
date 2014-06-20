@@ -59,6 +59,12 @@ public class RulesMgmtBean implements IRulesMgmt {
         return kSession.fireAllRules();
     }
     
+	public Collection getFactHandles(String deploymentId) {
+		KieSession kSession = getKieSession(deploymentId);
+        return kSession.getFactHandles();
+	}
+
+    
     // returns facts;  typically want to invoke this after having invoked:  fireAllRules
     @SuppressWarnings("unchecked")
     public Collection<Serializable> getFacts(String deploymentId){
@@ -143,5 +149,6 @@ public class RulesMgmtBean implements IRulesMgmt {
         
     }
 
+	
     
 }
