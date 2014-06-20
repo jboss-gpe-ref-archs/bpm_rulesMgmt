@@ -133,10 +133,9 @@ And, obviously, if a different application-specific service were to be implement
 The following demonstrates various curl commands to interact with the out-of-the-box RESTful service included in this reference architecture:
 
 NOTE:  
-The following examples reference a DNS name of _docker_bpms_.
+The following examples reference a DNS name of *docker_bpms*.
 In these examples, _docker_bpms_ is the name of the host where BPM Suite 6 is running.
 Customize these commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running
-
 Also, the following examples reference a curl command-line parameter of:  *-u jboss:brms* .
 In these examples, jboss:brms is the userId:password used by the curl utility to authenticate to the _business-central_ web archive of BPM Suite 6.
 Customize the value of -u userId:password so that curl can authenticate to your BPM Suite 6 environment.
