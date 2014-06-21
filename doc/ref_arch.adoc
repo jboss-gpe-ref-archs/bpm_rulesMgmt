@@ -60,14 +60,12 @@ This example KIE project is invoked by remote clients via the rules management A
 Similar to the existing BPM Suite 6 Execution Server, this Rules Management CDI bean is _Deployment Unit_ aware.
 The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object to insert facts and globals into the working memory of the rules engine.
 
-.. Example application-specific rules mgmt service
+.. Example rules mgmt service
 +
-The Rules Management CDI bean can be wrapped and exposed using a variety of transports.
+The Rules Management CDI bean can be wrapped and exposed using a variety of different transports.
 A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
 In this reference architecture, an example RESTful service is provided.
-This RESTful service is application specific.
-JAXB (un)marshalling of the included application-specific domain model occurs in this application specific RESTful service.
-It is expected that a user of this reference architecture will customize this RESTful interface or create their own.
+JAXB (un)marshalling of the included application-specific domain model occurs in this RESTful service.
 
 === Rules Management Topics
 . *Deployment Unit aware*
@@ -135,7 +133,7 @@ cp rulesMgmt/target/bpm_rulesMgmt.jar $JBOSS_HOME/standalone/deployments/busines
 NOTE: the deployment unit id will be:  com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0
 
 == Test
-This reference architecture includes an application specific RESTful interface to manage the rules engine assigned to a Deployment Unit.
+This reference architecture includes a RESTful interface to manage the rules engine assigned to a Deployment Unit.
 
 === Test Details
 
@@ -162,7 +160,7 @@ The test examples assume that they are being executed from the root directory of
 
 === Sample Test Commands
 
-. ensure that REST service properly started:
+. *sanity check*:  ensure that REST service properly started:
 +
 -----
 curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-central/rest/RulesMgmtResource/sanityCheck
@@ -171,24 +169,24 @@ curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-centr
 +
 response:  good to go
 
-. insert an application specific global (called: pTracker) into the working memory of the rules engine assigned to a deployment unit:
+. *insert global*: insert an application specific global (called: pTracker) into the working memory of the rules engine assigned to a deployment unit:
 +
 -----
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyTracker.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/global/pTracker
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyTracker.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/global/pTracker?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker
 -----
 
 +
 response:  none.  
 
-. insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to a deployment unit:
+. *insert fact*: insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to a deployment unit:
 +
 -----
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact/
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy
 -----
 +
 response: xml representation of fact handle corresponding to inserted fact.
 
-. fire all rules included in the working memory of the rules engine assigned to a deployment unit
+. *fireAllRules*: fire all rules included in the working memory of the rules engine assigned to a deployment unit
 +
 -----
 curl -v -u jboss:brms -X POST docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fireAllRules
@@ -196,7 +194,7 @@ curl -v -u jboss:brms -X POST docker_bpms:8080/business-central/rest/RulesMgmtRe
 +
 response:  number of rules fired
 
-. return a Collection of factHandles of all the facts presently in the working memory of the rules engine
+. *get all fact handles*: return a Collection of factHandles of all the facts presently in the working memory of the rules engine
 +
 -----
 curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/factHandles > rulesMgmt/src/test/resources/fHandles.xml
@@ -204,7 +202,7 @@ curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtRes
 +
 response: XML representation of list of fact handles. Response is re-directed to a file.
 
-. retrieve all _policy_ facts from the working memory of the rules engine assigned to a deployment unit
+. *get all facts*: retrieve all facts from the working memory of the rules engine assigned to a deployment unit
 +
 -----
 curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
@@ -212,7 +210,7 @@ curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtRes
 +
 response: list of _policy_ facts in xml representation
 
-. given a List of FactHandle objects, return a Collection of corresponding facts that are presently in the working memory
+. *get selected facts*: given a List of FactHandle objects, return a Collection of corresponding facts that are presently in the working memory
 +
 -----
 curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandles.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
@@ -221,7 +219,7 @@ curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src
 response: list of _policy_ facts in xml representation
 
 
-. given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a deployment unit
+. *get fact*: given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a deployment unit
 +
 -----
 curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
@@ -229,7 +227,7 @@ curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src
 +
 response: xml representation of a _policy_ fact
 
-. delete all previously inserted _policy_ facts from the working memory of the rules engine assigned to a deployment unit
+. *delete all facts*: delete all previously inserted _policy_ facts from the working memory of the rules engine assigned to a deployment unit
 +
 ----
 curl -v -u jboss:brms -X DELETE docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
@@ -237,7 +235,7 @@ curl -v -u jboss:brms -X DELETE docker_bpms:8080/business-central/rest/RulesMgmt
 +
 response: integer count of facts deleted
 
-. given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
+. *delete specific fact*: given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
 +
 -----
 curl -v -u jboss:brms -X DELETE -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
@@ -245,7 +243,7 @@ curl -v -u jboss:brms -X DELETE -H "Content-Type:application/xml" -d @rulesMgmt/
 +
 response: integer count of facts deleted (1 if fact was removed, 0 if fact is not found)
 
-. get a count of all facts from the working memory of the rules engine assigned to deployment unit
+. *get count of all facts*: get a count of all facts from the working memory of the rules engine assigned to deployment unit
 +
 -----
 curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts/count

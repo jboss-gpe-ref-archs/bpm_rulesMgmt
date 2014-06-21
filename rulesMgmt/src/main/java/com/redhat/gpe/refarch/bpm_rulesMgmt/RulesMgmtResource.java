@@ -7,7 +7,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -18,6 +20,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
@@ -34,9 +37,7 @@ import org.drools.core.common.DefaultFactHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy;
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.ObjectList;
-import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
 
 /*
  * Application specific RESTful API that exposes the functionality provided by the rules management CDI bean.
@@ -55,16 +56,23 @@ public class RulesMgmtResource {
     private Logger log = LoggerFactory.getLogger("RulesMgmtResource");
     
     /**
-     * sample usage :
-     *  curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact/
+     * sample usage :curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy
+     *  
      */
     @POST
     @Path("/{deploymentId: .*}/fact")
     @Consumes({"application/json","application/xml"})
     @Produces({ "application/xml" })
-    public Response insertFact(@PathParam("deploymentId") final String deploymentId, Policy pObj) {
-        DefaultFactHandle fHandle = (DefaultFactHandle)rProxy.insertFact(deploymentId, pObj);
-        return marshallObject(DefaultFactHandle.class, fHandle);
+    public Response insertFact(@PathParam("deploymentId") final String deploymentId, @QueryParam("fqn") final String fqn, InputStream oStream) {
+        Object fObj = null;
+        try {
+            fObj = this.unmarshalXML(fqn, oStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        DefaultFactHandle fHandle = (DefaultFactHandle)rProxy.insertFact(deploymentId, fObj);
+        return marshallObject(fHandle.getClass(), fHandle);
     }
    
     
@@ -76,8 +84,15 @@ public class RulesMgmtResource {
     @Path("/{deploymentId: .*}/global/{identifier: .*}/")
     @Consumes({"application/json","application/xml"})
     @Produces({ "text/plain" })
-    public Response setGlobal(@PathParam("deploymentId") final String deploymentId, @PathParam("identifier") final String identifier, PolicyTracker pTracker) {
-        rProxy.setGlobal(deploymentId, identifier, pTracker);
+    public Response setGlobal(@PathParam("deploymentId") final String deploymentId, @PathParam("identifier") final String identifier, @QueryParam("fqn") final String fqn, InputStream oStream) {
+        Object gObj = null;
+        try {
+            gObj = this.unmarshalXML(fqn, oStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        rProxy.setGlobal(deploymentId, identifier, gObj);
         ResponseBuilder builder = Response.ok();
         return builder.build();
     }
@@ -106,7 +121,7 @@ public class RulesMgmtResource {
     public Response getAllFactHandles(@PathParam("deploymentId") final String deploymentId) {
         Collection factHandles = rProxy.getFactHandles(deploymentId);
         log.info("getFacts() # of fact handles = "+factHandles.size());
-        return marshalList(factHandles, FACT_HANDLE_LIST, DefaultFactHandle.class);
+        return marshalList(factHandles, FACT_HANDLE_LIST);
     }
     
     
@@ -120,7 +135,7 @@ public class RulesMgmtResource {
     public Response getAllFacts(@PathParam("deploymentId") final String deploymentId) {
         Collection<Serializable> facts = rProxy.getFacts(deploymentId);
         log.info("getAllFacts() # of fact handles = "+facts.size());
-        return marshalList(facts, FACT_LIST, Policy.class);
+        return marshalList(facts, FACT_LIST);
     }
     
    /*
@@ -131,10 +146,16 @@ public class RulesMgmtResource {
    @Consumes({"application/xml"})
    @Produces({ "application/xml" })
    public Response getFacts(@PathParam("deploymentId") final String deploymentId, InputStream fHandleStream) {
-       List fHandles = unmarshalList(DefaultFactHandle.class, fHandleStream);
+       List fHandles = null;
+       try {
+           unmarshalXMLList(DefaultFactHandle.class, fHandleStream);
+       }catch(JAXBException x){
+           x.printStackTrace();
+           return Response.status(Status.BAD_REQUEST).build();
+       }
        log.info("getFacts() # of fact handles = "+fHandles.size());
        Collection<Serializable> facts = rProxy.getFacts(deploymentId, fHandles);
-       return marshalList(facts, FACT_LIST, Policy.class);
+       return marshalList(facts, FACT_LIST);
    }
    
     
@@ -149,7 +170,7 @@ public class RulesMgmtResource {
     public Response getFact(@PathParam("deploymentId") final String deploymentId, DefaultFactHandle fHandle) {
         log.info("getFact() fHandle = "+fHandle);
         Object fact = rProxy.getFact(deploymentId, fHandle);
-        return marshallObject(Policy.class, fact);
+        return marshallObject(fact.getClass(), fact);
     }
     
     /**
@@ -196,21 +217,6 @@ public class RulesMgmtResource {
     
     /**
      * sample usage :
-     *  curl -v -u jboss:brms -X POST docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rulesLifecycle
-     */
-    @POST
-    @Path("/{deploymentId: .*}/rulesLifecycle/")
-    public Response testRulesLifecycle(@PathParam("deploymentId") final String deploymentId) {
-        rProxy.setGlobal(deploymentId, "policyTracker", new StringBuilder());
-        rProxy.insertFact(deploymentId, new Policy());
-        int numRulesFired = rProxy.fireAllRules(deploymentId);
-        rProxy.removeFacts(deploymentId);
-        ResponseBuilder builder = Response.ok("number of rules Fired = "+numRulesFired+"\n");
-        return builder.build();
-    }
-
-    /**
-     * sample usage :
      *  curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-central/rest/RulesMgmtResource/sanityCheck
      */
     @GET
@@ -250,7 +256,7 @@ public class RulesMgmtResource {
         return builder.build();
     }
     
-    private Response marshalList(Collection<Serializable> objects, String jaxbListName, Class objectClassType) {
+    private Response marshalList(Collection<Serializable> objects, String jaxbListName) {
         ResponseBuilder builder = null;
         if(objects == null || objects.isEmpty())
             builder = Response.status(Status.NOT_FOUND);
@@ -260,7 +266,7 @@ public class RulesMgmtResource {
             JAXBContext jc;
             Writer sWriter = null;
             try {
-                jc = JAXBContext.newInstance(ObjectList.class, objectClassType);
+                jc = JAXBContext.newInstance(findTypes(objects));
                 Marshaller marshaller = jc.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
                 QName qName = new QName(jaxbListName);
@@ -284,21 +290,30 @@ public class RulesMgmtResource {
         return builder.build();
     }
     
-    private <T> List<T> unmarshalList(Class<T> clazz, InputStream iStream) {
-        JAXBContext jc;
-        Writer sWriter = null;
-        ObjectList<T> objectList = null;
-        Source iSource = null;
-        try {
-            iSource = new StreamSource(iStream);
-            jc = JAXBContext.newInstance(ObjectList.class, clazz);
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            objectList = (ObjectList<T>) unmarshaller.unmarshal(iSource, ObjectList.class).getValue();
-        }catch(Exception x){
-            x.printStackTrace();
-            objectList = new ObjectList();
-        }
+    private Object unmarshalXML(String fqn, InputStream iStream) throws JAXBException, ClassNotFoundException {
+        JAXBContext    jc = JAXBContext.newInstance(Class.forName(fqn));
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        Object obj = unmarshaller.unmarshal(iStream);
+        return obj;
+    }
+    
+    private <T> List<T> unmarshalXMLList(Class<T> clazz, InputStream iStream) throws JAXBException {
+        Source iSource = new StreamSource(iStream);
+        JAXBContext jc = JAXBContext.newInstance(ObjectList.class, clazz);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        ObjectList<T> objectList = (ObjectList<T>) unmarshaller.unmarshal(iSource, ObjectList.class).getValue();
         return objectList.getItems();
+    }
+    
+    private static <T> Class[] findTypes(Collection<T> c) {
+        Set<Class> types = new HashSet<Class>();
+        types.add(ObjectList.class);
+        for(T o : c){
+            if(o != null) {
+                types.add(o.getClass());
+            }
+        }
+        return types.toArray(new Class[0]);
     }
 }
 
