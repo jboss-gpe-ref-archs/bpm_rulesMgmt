@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.kie.api.command.Command;
+import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.rule.FactHandle;
 
 public interface IRulesMgmt {
@@ -59,9 +61,15 @@ public interface IRulesMgmt {
     public int removeFact(String deploymentId, FactHandle fHandle);
     
     /*
+     * Execute a batch of commands in a single transaction
+     * Particularly useful to support interaction with stateless KIE sessions
+     */
+    public ExecutionResults execute(String deploymentId, List<Command> commandList);
+    
+    /*
      * log details of facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit
      */
-    public void dumpFacts(String deploymentId);
+    public void logFacts(String deploymentId);
     
 
 }

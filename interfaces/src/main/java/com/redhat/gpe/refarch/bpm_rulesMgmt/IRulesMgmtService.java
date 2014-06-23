@@ -18,5 +18,5 @@ public interface IRulesMgmtService {
     public int removeFacts(String deploymentId);
     public int removeFact(String deployment, FactHandle fHandle);
     
-    public void dumpFacts(String deploymentId);
+    public void logFacts(String deploymentId);
 }

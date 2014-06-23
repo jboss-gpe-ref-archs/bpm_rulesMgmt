@@ -14,11 +14,14 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
+import org.kie.api.command.Command;
+import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
 import org.kie.api.runtime.manager.Context;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.internal.command.CommandFactory;
 import org.kie.internal.runtime.manager.context.EmptyContext;
 import org.kie.services.remote.cdi.DeploymentInfoBean;
 import org.slf4j.Logger;
@@ -39,7 +42,13 @@ public class RulesMgmtBean implements IRulesMgmt {
     
     @PostConstruct
     public void start() {
+        StringBuilder sBuilder = new StringBuilder("start() registered deploymentIds = ");
         logger.info("start");
+        Collection<String> dCollection = dInfoBean.getDeploymentIds();
+        for(String dId : dCollection){
+            sBuilder.append("\n\t");
+            sBuilder.append(dId);
+        }
     }
     
     public FactHandle insertFact(String deploymentId, Object fObject){
@@ -121,17 +130,23 @@ public class RulesMgmtBean implements IRulesMgmt {
     }
     
     // dumps inventory of facts to log file
-    public void dumpFacts(String deploymentId) {
+    public void logFacts(String deploymentId) {
         KieSession kSession = getKieSession(deploymentId);
         Collection<? extends Object> facts = kSession.getObjects();
         Iterator iFacts = facts.iterator();
         StringBuilder sBuilder = new StringBuilder();
-        sBuilder.append("dumpFacts() facts = \n");
+        sBuilder.append("logFacts() facts = \n");
         while(iFacts.hasNext()){
             sBuilder.append(iFacts.next());
             sBuilder.append("\n");
         }
         logger.info(sBuilder.toString());
+    }
+    
+    public ExecutionResults execute(String deploymentId, List<Command> commandList) {
+        KieSession kSession = getKieSession(deploymentId);
+        ExecutionResults eResults = kSession.execute(CommandFactory.newBatchExecution(commandList ));
+        return eResults;
     }
     
     public void dispose(String deploymentId) {
@@ -144,10 +159,18 @@ public class RulesMgmtBean implements IRulesMgmt {
         if(sessionMap.get(deploymentId) != null)
             return sessionMap.get(deploymentId);
         
+        
         RuntimeManager runtimeManager = dInfoBean.getRuntimeManager(deploymentId);
         if (runtimeManager == null) {
             throw new RuntimeException("getRuntimeEngine() No runtime manager could be found for deployment '" + deploymentId + "'.");
         }
+        
+        /* 
+         * There are two other implementations of: org.kie.api.runtime.manager.Context
+         *   1)  CorrelationKeyContext
+         *   2)  ProcessInstanceIdContext
+         * Both alternatives appear to be specific to process engine scenarious
+         */
         Context<?> runtimeContext = EmptyContext.get();
         RuntimeEngine rEngine = runtimeManager.getRuntimeEngine(runtimeContext);
         KieSession kSession = rEngine.getKieSession();

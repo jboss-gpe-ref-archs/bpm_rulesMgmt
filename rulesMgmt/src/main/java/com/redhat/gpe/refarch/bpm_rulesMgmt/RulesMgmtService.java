@@ -69,8 +69,8 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.removeFact(deploymentId, fHandle);
     }
     
-    public void dumpFacts(String deploymentId) {
-        rMgmtBean.dumpFacts(deploymentId);
+    public void logFacts(String deploymentId) {
+        rMgmtBean.logFacts(deploymentId);
     }
     
 
