@@ -19,4 +19,5 @@ public interface IRulesMgmtService {
     public int removeFact(String deployment, FactHandle fHandle);
     
     public void logFacts(String deploymentId);
+    public void logRules(String deploymentId);
 }

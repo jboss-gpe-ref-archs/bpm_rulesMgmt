@@ -251,5 +251,12 @@ curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtRes
 +
 response:  integer count of facts
 
+. *logRules*: log names of rules per KiePackage for a specific Deployment Unit
++
+-----
+curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules
+-----
++
+response:  None. Check BPM Suite 6 server.log
 
 == To-Do

@@ -71,5 +71,10 @@ public interface IRulesMgmt {
      */
     public void logFacts(String deploymentId);
     
+    /*
+     * log names of rules per KiePackage for a specific Deployment Unit
+     */
+    public void logRules(String deploymentId);
+    
 
 }

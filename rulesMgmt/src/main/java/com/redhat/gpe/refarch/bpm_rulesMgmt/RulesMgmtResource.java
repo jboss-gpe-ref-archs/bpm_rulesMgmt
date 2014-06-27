@@ -17,6 +17,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -212,6 +213,20 @@ public class RulesMgmtResource {
         Collection<Serializable> facts = rProxy.getFacts(deploymentId);
         ResponseBuilder builder = Response.ok(facts.size());
         return builder.build();
+    }
+    
+    /**
+     * sample usage:
+     *   curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules
+     */
+    @PUT
+    @Path("/{deploymentId: .*}/rules")
+    @Produces({ "text/plain" } )
+    public Response logRules(@PathParam("deploymentId") final String deploymentId) {
+        rProxy.logRules(deploymentId);
+        ResponseBuilder builder = Response.ok("check server.log\n");
+        return builder.build();
+        
     }
     
     

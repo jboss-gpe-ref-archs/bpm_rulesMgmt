@@ -72,6 +72,9 @@ public class RulesMgmtService implements IRulesMgmtService {
     public void logFacts(String deploymentId) {
         rMgmtBean.logFacts(deploymentId);
     }
+    public void logRules(String deploymentId) {
+        rMgmtBean.logRules(deploymentId);
+    }
     
 
 }

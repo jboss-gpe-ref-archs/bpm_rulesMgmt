@@ -14,7 +14,10 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
+import org.kie.api.KieBase;
 import org.kie.api.command.Command;
+import org.kie.api.definition.KiePackage;
+import org.kie.api.definition.rule.Rule;
 import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
@@ -139,6 +142,31 @@ public class RulesMgmtBean implements IRulesMgmt {
         while(iFacts.hasNext()){
             sBuilder.append(iFacts.next());
             sBuilder.append("\n");
+        }
+        logger.info(sBuilder.toString());
+    }
+    
+    public void logRules(String deploymentId) {
+        KieSession kSession = getKieSession(deploymentId);
+        StringBuilder sBuilder = new StringBuilder("logRules() rules for deploymentId = "+deploymentId+" as follows:");
+        KieBase kBase = kSession.getKieBase();
+        Collection<KiePackage> kPackages = kBase.getKiePackages();
+        if(kPackages.size() == 0){
+            sBuilder.append("\n\tNo kPackages defined");
+        }else {
+            for(KiePackage kPackage : kPackages){
+                sBuilder.append("\n\t");
+                sBuilder.append(kPackage.getName());
+                Collection<Rule> rules = kPackage.getRules();
+                if(rules.size() == 0)
+                    sBuilder.append("\n\t\tNo rules defined");
+                else {
+                    for(Rule rule : rules) {
+                        sBuilder.append("\n\t\t");
+                        sBuilder.append(rule.getName());
+                    }
+                }
+            }
         }
         logger.info(sBuilder.toString());
     }
