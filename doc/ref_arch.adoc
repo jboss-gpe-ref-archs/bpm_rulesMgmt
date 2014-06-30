@@ -252,9 +252,10 @@ curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtRes
 response:  integer count of facts
 
 . *logRules*: log names of rules per KiePackage for a specific Deployment Unit
+Set _showMetadata=false_ if not interested in viewing the meta-data for each rule.  (Defaults to true)
 +
 -----
-curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules
+curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules?showMetadata=true
 -----
 +
 response:  None. Check BPM Suite 6 server.log

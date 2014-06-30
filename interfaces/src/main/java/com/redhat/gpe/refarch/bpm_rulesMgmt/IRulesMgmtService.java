@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.kie.api.command.Command;
+import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.rule.FactHandle;
 
 public interface IRulesMgmtService {
@@ -17,7 +19,8 @@ public interface IRulesMgmtService {
     public Object getFact(String deploymentId, FactHandle fHandle);
     public int removeFacts(String deploymentId);
     public int removeFact(String deployment, FactHandle fHandle);
+    public ExecutionResults execute(String deploymentId, List<Command> commandList);
     
     public void logFacts(String deploymentId);
-    public void logRules(String deploymentId);
+    public void logRules(String deploymentId, boolean showMetadata);
 }

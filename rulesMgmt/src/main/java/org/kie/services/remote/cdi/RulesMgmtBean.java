@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -146,7 +148,7 @@ public class RulesMgmtBean implements IRulesMgmt {
         logger.info(sBuilder.toString());
     }
     
-    public void logRules(String deploymentId) {
+    public void logRules(String deploymentId, boolean showMetadata) {
         KieSession kSession = getKieSession(deploymentId);
         StringBuilder sBuilder = new StringBuilder("logRules() rules for deploymentId = "+deploymentId+" as follows:");
         KieBase kBase = kSession.getKieBase();
@@ -164,6 +166,17 @@ public class RulesMgmtBean implements IRulesMgmt {
                     for(Rule rule : rules) {
                         sBuilder.append("\n\t\t");
                         sBuilder.append(rule.getName());
+                        if(showMetadata){
+                            Map<String, Object> ruleMetadata = rule.getMetaData();
+                            if(ruleMetadata.size() == 0)
+                                sBuilder.append("\n\t\t\tno metadata for this rule");
+                            else {
+                                for(Entry<String,Object> entry : ruleMetadata.entrySet()){
+                                    sBuilder.append("\n\t\t\t");
+                                    sBuilder.append(entry.getKey()+" : "+entry.getValue());
+                                }
+                            }
+                        }
                     }
                 }
             }

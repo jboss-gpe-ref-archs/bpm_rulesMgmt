@@ -14,6 +14,8 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
+import org.kie.api.command.Command;
+import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.services.remote.cdi.IRulesMgmt;
 
@@ -69,11 +71,15 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.removeFact(deploymentId, fHandle);
     }
     
+    public ExecutionResults execute(String deploymentId, List<Command> commandList){
+        return rMgmtBean.execute(deploymentId, commandList);
+    }
+    
     public void logFacts(String deploymentId) {
         rMgmtBean.logFacts(deploymentId);
     }
-    public void logRules(String deploymentId) {
-        rMgmtBean.logRules(deploymentId);
+    public void logRules(String deploymentId, boolean showMetadata) {
+        rMgmtBean.logRules(deploymentId, showMetadata);
     }
     
 

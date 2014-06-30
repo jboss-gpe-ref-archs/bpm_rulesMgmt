@@ -35,6 +35,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.drools.core.common.DefaultFactHandle;
+import org.kie.api.runtime.ExecutionResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +115,7 @@ public class RulesMgmtResource {
     
     /**
      * sample usage :
-     *  curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/factHandles
+     *  curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/factHandles > rulesMgmt/src/test/resources/fHandles.xml
      */
     @GET
     @Path("/{deploymentId: .*}/factHandles")
@@ -149,7 +150,8 @@ public class RulesMgmtResource {
    public Response getFacts(@PathParam("deploymentId") final String deploymentId, InputStream fHandleStream) {
        List fHandles = null;
        try {
-           unmarshalXMLList(DefaultFactHandle.class, fHandleStream);
+           Class[] classes = new Class[]{DefaultFactHandle.class, ObjectList.class};
+           fHandles = unmarshalXMLList(fHandleStream, classes);
        }catch(JAXBException x){
            x.printStackTrace();
            return Response.status(Status.BAD_REQUEST).build();
@@ -201,6 +203,45 @@ public class RulesMgmtResource {
         return builder.build();
     }
     
+    /**
+     * sample usage :curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/stateless?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy|com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver
+     *  
+     */
+    @POST
+    @Path("/{deploymentId: .*}/stateless")
+    @Consumes({"application/json","application/xml"})
+    @Produces({ "application/xml" })
+    public Response execute(@PathParam("deploymentId") final String deploymentId, @QueryParam("fqns") final String fqnsString, InputStream commandStream){
+        if(fqnsString == null || fqnsString.isEmpty()){
+            log.error("execute() fqns query param = null");
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        String[] fqns = fqnsString.split("|");
+        if(fqns.length == 0){
+            log.error("execute() no fqns added to POST as query param");
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        log.info("execute() # of fqns = "+fqns.length);
+        
+        // TO-DO:  create Class[]
+        
+        List commandList = null;
+        try {
+            commandList = unmarshalXMLList(commandStream, DefaultFactHandle.class);
+        }catch(JAXBException x){
+            x.printStackTrace();
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        log.info("execute() # of commands = "+commandList.size());
+        ExecutionResults eResults = rProxy.execute(deploymentId, commandList);
+        Collection<String> identifiers = eResults.getIdentifiers();
+        Collection<Serializable> facts = new ArrayList<Serializable>();
+        for(String identifier : identifiers){
+            facts.add((Serializable)eResults.getValue(identifier));
+        }
+        return marshalList(facts, FACT_LIST);
+    }
+    
     
     /**
      * sample usage :
@@ -217,13 +258,17 @@ public class RulesMgmtResource {
     
     /**
      * sample usage:
-     *   curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules
+     *   curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules?showMetadata=true
      */
     @PUT
     @Path("/{deploymentId: .*}/rules")
     @Produces({ "text/plain" } )
-    public Response logRules(@PathParam("deploymentId") final String deploymentId) {
-        rProxy.logRules(deploymentId);
+    public Response logRules(@PathParam("deploymentId") final String deploymentId,  @QueryParam("showMetadata") final String showMetadataString) {
+        boolean showMetadata = true;
+        if(showMetadataString != null && !showMetadataString.isEmpty()){
+            showMetadata = Boolean.parseBoolean(showMetadataString);
+        }
+        rProxy.logRules(deploymentId, showMetadata);
         ResponseBuilder builder = Response.ok("check server.log\n");
         return builder.build();
         
@@ -312,9 +357,9 @@ public class RulesMgmtResource {
         return obj;
     }
     
-    private <T> List<T> unmarshalXMLList(Class<T> clazz, InputStream iStream) throws JAXBException {
+    private <T> List<T> unmarshalXMLList(InputStream iStream, Class<T>... clazzes) throws JAXBException {
         Source iSource = new StreamSource(iStream);
-        JAXBContext jc = JAXBContext.newInstance(ObjectList.class, clazz);
+        JAXBContext jc = JAXBContext.newInstance(clazzes);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         ObjectList<T> objectList = (ObjectList<T>) unmarshaller.unmarshal(iSource, ObjectList.class).getValue();
         return objectList.getItems();
