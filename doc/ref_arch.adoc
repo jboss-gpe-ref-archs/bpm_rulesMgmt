@@ -269,7 +269,8 @@ curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtRes
 +
 response:  None. Check BPM Suite 6 server.log
 
-. *execute batch commands*: 
+. *execute batch commands*:
++
 Supports use-cases requiring a stateless KIESession.
 HTTP payload consists of XML representation of the org.kie.api.command.BatchExecutionCommand.
 All batch commands included in the http payload are executed in the stateless kie session in a single transaction.
@@ -280,9 +281,10 @@ curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/sr
 ------
 +
 response: XML representation of facts added to working memory.
-NOTE:  in order for facts to be returned the following attributes need to be included in the initial BatchExecutionCommand payload:
++
+In order for facts to be returned the following attributes need to be included in the initial BatchExecutionCommand payload:
 
-. return-object="true"
-. out-identifier="<your identifier>"
+.. return-object="true"
+.. out-identifier="<your identifier>"
 
 == To-Do
