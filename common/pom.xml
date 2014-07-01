@@ -9,7 +9,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <version>1.1-redhat-5</version>
   </parent>
   <groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId>
-  <artifactId>interfaces</artifactId>
+  <artifactId>common</artifactId>
   <version>1.0</version>
   <packaging>jar</packaging>
 
@@ -18,7 +18,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   </properties>
 
   <build>
-    <finalName>bpm_rulesMgmt_interfaces</finalName>
+    <finalName>bpm_rulesMgmt_common</finalName>
   </build>
 
   <dependencyManagement>

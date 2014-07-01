@@ -10,7 +10,7 @@
 
   <modules>
     <module>domain</module>
-    <module>interfaces</module>
+    <module>common</module>
     <module>rulesMgmt</module>
   </modules>
 

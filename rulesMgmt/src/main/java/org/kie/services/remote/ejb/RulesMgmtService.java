@@ -1,4 +1,4 @@
-package com.redhat.gpe.refarch.bpm_rulesMgmt;
+package org.kie.services.remote.ejb;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -14,10 +14,12 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 
+import org.kie.api.command.BatchExecutionCommand;
 import org.kie.api.command.Command;
 import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.services.remote.cdi.IRulesMgmt;
+import org.kie.services.remote.ejb.IRulesMgmtService;
 
 
 /*
@@ -71,8 +73,8 @@ public class RulesMgmtService implements IRulesMgmtService {
         return rMgmtBean.removeFact(deploymentId, fHandle);
     }
     
-    public ExecutionResults execute(String deploymentId, List<Command> commandList){
-        return rMgmtBean.execute(deploymentId, commandList);
+    public ExecutionResults execute(String deploymentId, BatchExecutionCommand batchCommand){
+        return rMgmtBean.execute(deploymentId, batchCommand);
     }
     
     public void logFacts(String deploymentId) {

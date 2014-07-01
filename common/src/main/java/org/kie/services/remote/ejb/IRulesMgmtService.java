@@ -1,10 +1,10 @@
-package com.redhat.gpe.refarch.bpm_rulesMgmt;
+package org.kie.services.remote.ejb;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
-import org.kie.api.command.Command;
+import org.kie.api.command.BatchExecutionCommand;
 import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.rule.FactHandle;
 
@@ -19,7 +19,7 @@ public interface IRulesMgmtService {
     public Object getFact(String deploymentId, FactHandle fHandle);
     public int removeFacts(String deploymentId);
     public int removeFact(String deployment, FactHandle fHandle);
-    public ExecutionResults execute(String deploymentId, List<Command> commandList);
+    public ExecutionResults execute(String deploymentId, BatchExecutionCommand batchCommand);
     
     public void logFacts(String deploymentId);
     public void logRules(String deploymentId, boolean showMetadata);

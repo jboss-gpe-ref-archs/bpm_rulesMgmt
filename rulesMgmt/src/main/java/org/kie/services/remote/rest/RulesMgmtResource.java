@@ -1,4 +1,4 @@
-package com.redhat.gpe.refarch.bpm_rulesMgmt;
+package org.kie.services.remote.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,16 +34,26 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.drools.core.command.runtime.BatchExecutionCommandImpl;
 import org.drools.core.common.DefaultFactHandle;
 import org.kie.api.runtime.ExecutionResults;
+import org.kie.services.remote.domain.ObjectList;
+import org.kie.services.remote.ejb.IRulesMgmtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.ObjectList;
-
 /*
- * Application specific RESTful API that exposes the functionality provided by the rules management CDI bean.
- * It's expected that users of this reference architecture will customize this class to support thier application-specific domain model.
+ * RESTful API that exposes the functionality provided by the rules management CDI bean.
+ * Supports invocation of both Stateful and Stateless KIESessions
+ * 
+ * addition of @Stateless annotation provides following advantages:
+ *
+ *   Injection capabilities: you can easily inject other EJBs, EntityManagers, JMS-resources, DataSources or JCA connectors
+ *   Transactions: all changes made in a REST-call will be automatically and transparently synchronized with the database
+ *   Single threading programming model -> the old EJB goodness.
+ *   Monitoring: an EJB is visible in JMX
+ *   Throttling: its easy to restrict the concurrency of an EJB using ThreadPools or bean pools
+ *   Vendor-independence: EJB 3 runs on multiple containers, without any modification (and without any XML in particular :-))
  */
 @Stateless
 @Path("/RulesMgmtResource")
@@ -151,7 +161,7 @@ public class RulesMgmtResource {
        List fHandles = null;
        try {
            Class[] classes = new Class[]{DefaultFactHandle.class, ObjectList.class};
-           fHandles = unmarshalXMLList(fHandleStream, classes);
+           fHandles = unmarshalXMLObjectList(fHandleStream, classes);
        }catch(JAXBException x){
            x.printStackTrace();
            return Response.status(Status.BAD_REQUEST).build();
@@ -204,7 +214,7 @@ public class RulesMgmtResource {
     }
     
     /**
-     * sample usage :curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/stateless?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy|com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver
+     * sample usage :curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/stateless?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver"
      *  
      */
     @POST
@@ -216,24 +226,35 @@ public class RulesMgmtResource {
             log.error("execute() fqns query param = null");
             return Response.status(Status.BAD_REQUEST).build();
         }
-        String[] fqns = fqnsString.split("|");
+        String[] fqns = fqnsString.split("-");
         if(fqns.length == 0){
             log.error("execute() no fqns added to POST as query param");
             return Response.status(Status.BAD_REQUEST).build();
         }
         log.info("execute() # of fqns = "+fqns.length);
+        Class[] classes = new Class[fqns.length+1];
+        classes[0] = BatchExecutionCommandImpl.class;
+        int f=1;
+        for(String fqn: fqns){
+        	try {
+				Class fqnClass = Class.forName(fqn);
+				classes[f] = fqnClass;
+				f++;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+				return Response.status(Status.BAD_REQUEST).build();
+			}
+        }
         
-        // TO-DO:  create Class[]
-        
-        List commandList = null;
+        BatchExecutionCommandImpl batchCommand = null;
         try {
-            commandList = unmarshalXMLList(commandStream, DefaultFactHandle.class);
+            batchCommand = unmarshalXMLCommandList(commandStream, classes);
         }catch(JAXBException x){
             x.printStackTrace();
             return Response.status(Status.BAD_REQUEST).build();
         }
-        log.info("execute() # of commands = "+commandList.size());
-        ExecutionResults eResults = rProxy.execute(deploymentId, commandList);
+        log.info("execute() # of commands = "+batchCommand.getCommands().size());
+        ExecutionResults eResults = rProxy.execute(deploymentId, batchCommand);
         Collection<String> identifiers = eResults.getIdentifiers();
         Collection<Serializable> facts = new ArrayList<Serializable>();
         for(String identifier : identifiers){
@@ -357,12 +378,20 @@ public class RulesMgmtResource {
         return obj;
     }
     
-    private <T> List<T> unmarshalXMLList(InputStream iStream, Class<T>... clazzes) throws JAXBException {
+    private <T> List<T> unmarshalXMLObjectList(InputStream iStream, Class<T>... clazzes) throws JAXBException {
         Source iSource = new StreamSource(iStream);
         JAXBContext jc = JAXBContext.newInstance(clazzes);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
-        ObjectList<T> objectList = (ObjectList<T>) unmarshaller.unmarshal(iSource, ObjectList.class).getValue();
-        return objectList.getItems();
+        ObjectList<T> unmarshalledList = (ObjectList<T>) unmarshaller.unmarshal(iSource, ObjectList.class).getValue();
+        return unmarshalledList.getItems();
+    }
+    
+    private BatchExecutionCommandImpl unmarshalXMLCommandList(InputStream iStream, Class<?>... clazzes) throws JAXBException {
+        Source iSource = new StreamSource(iStream);
+        JAXBContext jc = JAXBContext.newInstance(clazzes);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        BatchExecutionCommandImpl batchCommands = (BatchExecutionCommandImpl) unmarshaller.unmarshal(iSource, BatchExecutionCommandImpl.class).getValue();
+        return batchCommands;
     }
     
     private static <T> Class[] findTypes(Collection<T> c) {

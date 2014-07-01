@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.kie.api.command.BatchExecutionCommand;
 import org.kie.api.command.Command;
 import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.rule.FactHandle;
@@ -64,7 +65,7 @@ public interface IRulesMgmt {
      * Execute a batch of commands in a single transaction
      * Particularly useful to support interaction with stateless KIE sessions
      */
-    public ExecutionResults execute(String deploymentId, List<Command> commandList);
+    public ExecutionResults execute(String deploymentId, BatchExecutionCommand batchCommand);
     
     /*
      * log details of facts that are presently in the working memory of the rules engine assigned to a specific Deployment Unit

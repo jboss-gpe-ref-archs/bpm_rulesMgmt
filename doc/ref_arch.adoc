@@ -3,8 +3,8 @@
 :rhtlink: link:https://www.redhat.com[Red Hat]
 :bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
 :dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
-:irulesmgmt: link:../interfaces/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
-:irulesmgmtservice: link:../interfaces/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
+:irulesmgmt: link:../common/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
+:irulesmgmtservice: link:../common/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
 
 image::images/rhheader.png[width=900]
 
@@ -38,7 +38,7 @@ JAXB annotations in your domain model are not a requirement.
 The end-state is the ability to (un)marshall your domain model classes so as to be used as _facts_ and _globals_ in the working memory of the BPM Suite 6 rules engine.
 As an application developer, you are responsible for how your domain model is best (un)marshalled to/from its Java object representation.
 
-. *interfaces*
+. *common*
 +
 This reference architecture includes an {irulesmgmt} interface.
 This IRulesMgmt interface is implemented by a CDI bean that manages the rules engine assigned to a _Deployment Unit_ .
@@ -122,7 +122,7 @@ mvn clean install -DskipTests
 +
 -----
 cp domain/target/bpm_rulesMgmt_domain.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
-cp interfaces/target/bpm_rulesMgmt-interfaces.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
+cp common/target/bpm_rulesMgmt_common.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
 cp rulesMgmt/target/bpm_rulesMgmt.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
 -----
 

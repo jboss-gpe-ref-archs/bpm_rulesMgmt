@@ -1,9 +1,12 @@
-package com.redhat.gpe.refarch.bpm_rulesMgmt.domain;
+package org.kie.services.remote.domain;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAnyElement;
 
+/*
+ * XML wrapper for a list of generic objects
+ */
 public class ObjectList<T> {
     
     private List<T> items;

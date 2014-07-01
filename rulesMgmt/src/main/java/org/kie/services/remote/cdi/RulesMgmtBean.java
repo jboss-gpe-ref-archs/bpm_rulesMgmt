@@ -17,6 +17,7 @@ import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import org.kie.api.KieBase;
+import org.kie.api.command.BatchExecutionCommand;
 import org.kie.api.command.Command;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.rule.Rule;
@@ -184,9 +185,9 @@ public class RulesMgmtBean implements IRulesMgmt {
         logger.info(sBuilder.toString());
     }
     
-    public ExecutionResults execute(String deploymentId, List<Command> commandList) {
+    public ExecutionResults execute(String deploymentId, BatchExecutionCommand batchCommand) {
         KieSession kSession = getKieSession(deploymentId);
-        ExecutionResults eResults = kSession.execute(CommandFactory.newBatchExecution(commandList ));
+        ExecutionResults eResults = kSession.execute(batchCommand);
         return eResults;
     }
     
