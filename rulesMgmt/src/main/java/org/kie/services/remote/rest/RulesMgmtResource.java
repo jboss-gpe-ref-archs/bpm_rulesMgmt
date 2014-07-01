@@ -62,7 +62,7 @@ public class RulesMgmtResource {
     private static final String FACT_LIST = "factList";
     private static final String FACT_HANDLE_LIST = "factHandleList";
 
-    @EJB(lookup="java:global/business-central/rulesMgmtService!com.redhat.gpe.refarch.bpm_rulesMgmt.IRulesMgmtService")
+    @EJB(lookup="java:global/business-central/rulesMgmtService!org.kie.services.remote.ejb.IRulesMgmtService")
     IRulesMgmtService rProxy;
 
     private Logger log = LoggerFactory.getLogger("RulesMgmtResource");
