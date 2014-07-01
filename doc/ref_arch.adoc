@@ -30,25 +30,23 @@ As you are going through this reference architecture, please pay particular atte
 === Directory Structure
 This reference architecture includes the following directories:
 
-. *domain*
-+
-Example application domain model classes used in this reference architecture to demonstrate capability of Rules Management API functionality.
-These example domain model classes contain JAXB annotations for (un)marshalling between its XML and java object representations.
-JAXB annotations in your domain model are not a requirement.
-The end-state is the ability to (un)marshall your domain model classes so as to be used as _facts_ and _globals_ in the working memory of the BPM Suite 6 rules engine.
-As an application developer, you are responsible for how your domain model is best (un)marshalled to/from its Java object representation.
-
 . *common*
 +
 This reference architecture includes an {irulesmgmt} interface.
 This IRulesMgmt interface is implemented by a CDI bean that manages the rules engine assigned to a _Deployment Unit_ .
 The IRulesMgmt interface and CDI bean implementation are generic and should not require customization.
-
 +
 This reference architecture also includes an {irulesmgmtservice} interface.
 Its implementation is an EJB that wraps transaction and remoting capabilties around the core rules management CDI bean.
 This IRulesMgmtService is also generic and should not require customization.
- 
+If your application makes use of EJB clients (either local or remote), then this is the interface to invoke.
+
+. *domain*
++
+Example application domain model classes used in this reference architecture to demonstrate capability of Rules Management API functionality.
+These example domain model classes contain JAXB annotations for (un)marshalling between its XML and java object representations.
+JAXB annotations in your domain model are a requirement if using the RESTful API provided by this reference architecture.
+
 . *processTier*
 +
 Example KIE project that includes a single rule.
@@ -59,13 +57,17 @@ This example KIE project is invoked by remote clients via the rules management A
 +
 Similar to the existing BPM Suite 6 Execution Server, this Rules Management CDI bean is _Deployment Unit_ aware.
 The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object to insert facts and globals into the working memory of the rules engine.
-
-.. Example rules mgmt service
-+
 The Rules Management CDI bean can be wrapped and exposed using a variety of different transports.
-A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
-In this reference architecture, an example RESTful service is provided.
-JAXB (un)marshalling of the included application-specific domain model occurs in this RESTful service.
+ie:  A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
+
+.. Rules Management EJB Service
++
+Allows for local and/or remote EJB clients to invoke the Rules Management API in a performant, transactional manner.
+
+.. Rules Management RESTful service
++
+Allows for invocation of the Rules Management API via http.
+Introduces over-head of JAXB (un)marshalling of an applications domain model.
 
 === Rules Management Topics
 . *Deployment Unit aware*
@@ -74,6 +76,13 @@ Similar to the existing BPM Suite 6 Execution Server, the Rules Management CDI b
 KIE projects are deployed as per your normal procedures using BPM Suite 6.
 KIE Base and KIE Session specifics are configured during creation of the deployment unit.
 The Rules Management CDI bean then manages the rules engine assigned to that deployment unit.
+
+. *Supports Stateful and Stateless KIESessions*
++
+The majority of rules use-cases benefit from a stateful KIESession.
+Some use-cases however are better served with a stateless KIESession where the life of the session is a single transaction.
+When using a stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
+This reference architecture provides an API that allows for interaction with either a stateful or stateless session.
 
 
 . *API*
