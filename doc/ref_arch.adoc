@@ -167,7 +167,7 @@ You will want to customize the value of -u userId:password so that curl can auth
 +
 The test examples assume that they are being executed from the root directory of this reference architecture.
 
-=== Sample Test Commands
+=== Sample RESTful Test Commands
 
 . *sanity check*:  ensure that the REST service is properly started:
 +
