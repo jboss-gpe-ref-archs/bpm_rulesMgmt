@@ -98,6 +98,9 @@ This is typically done via either of the following:
 .. add domain model libraries to business-central.war/WEB-INF/lib
 .. deploy your doman model libraries as static JBoss modules and define an explicit dependency in the business-central web archive to this static JBoss module.
 
++
+Some RESTful resources require the addition of a _fqn_ or _fqns_ query parameter to the URL.
+These query parameters are registered with the JAXB (un)marshaller.
 
 
 == Pre-Requisites
