@@ -276,7 +276,7 @@ response:  None. Check BPM Suite 6 server.log
 
 ==== Stateless KIE Session
 
-. *execute batch commands*:
+. *execute batch command*:
 +
 Supports use-cases requiring a stateless KIESession.
 HTTP payload consists of XML representation of the org.kie.api.command.BatchExecutionCommand.
