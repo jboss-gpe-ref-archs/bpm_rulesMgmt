@@ -172,7 +172,7 @@ The test examples assume that they are being executed from the root directory of
 
 === Sample RESTful Test Commands
 
-. *sanity check*:  ensure that the REST service is properly started:
+*sanity check*:  ensure that the REST service is properly started:
 +
 -----
 curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-central/rest/RulesMgmtResource/sanityCheck
@@ -180,6 +180,8 @@ curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-centr
 
 +
 response:  good to go
+
+==== Stateful KIE Session
 
 . *insert global*: insert an application specific global (called: pTracker) into the working memory of the rules engine assigned to a deployment unit:
 +
@@ -271,6 +273,8 @@ curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtRes
 -----
 +
 response:  None. Check BPM Suite 6 server.log
+
+==== Stateless KIE Session
 
 . *execute batch commands*:
 +
