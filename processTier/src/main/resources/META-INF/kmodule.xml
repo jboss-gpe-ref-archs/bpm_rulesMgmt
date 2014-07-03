@@ -1,5 +1,5 @@
 <kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <kbase name="kiebase" default="true" eventProcessingMode="cloud" equalsBehavior="identity">
-    <ksession name="ksession" type="stateful" default="true" clockType="realtime"/>
+    <ksession name="ksession" type="stateless" default="true" clockType="realtime"/>
   </kbase>
 </kmodule>
