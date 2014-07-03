@@ -7,8 +7,6 @@
   <version>1.0</version>
   <packaging>kjar</packaging>
   <name>processTier</name>
-  <dependencies>
-  </dependencies>
   <repositories>
     <repository>
       <id>guvnor-m2-repo</id>
