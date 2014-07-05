@@ -9,10 +9,15 @@ rule "testRule"
   when
       $policy : Policy()
   then
-     int count = pTracker.getProcessedCount();
-     count++;
-     pTracker.setProcessedCount(count);
-     String statement = "testRule() ... just executed: count = "+count;
-     System.out.println(statement);
+     if(pTracker != null) {
+         int count = pTracker.getProcessedCount();
+         pTracker.setProcessedCount(count++);
+         System.out.println("testRule() processedCount = "+pTracker.getProcessedCount());
+    } else {
+        System.out.println("testRule() pTracker global is null");
+    }
+    Thread.sleep(5000);
+    System.out.println("testRule() done sleeping");
+    
 end  
 
