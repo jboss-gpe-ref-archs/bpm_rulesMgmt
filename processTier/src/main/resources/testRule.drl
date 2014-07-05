@@ -10,7 +10,7 @@ rule "testRule"
       $policy : Policy()
   then
     int sleepTime = 1000;
-     if(pTracker != null) {
+     if(pGlobal != null) {
          sleepTime = pGlobal.getSleepTime();
     }
     System.out.println("testRule() sleepTime = "+sleepTime);
