@@ -14,7 +14,7 @@
     </insert>
     <set-global identifier="pGlobal">
         <object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PolicyGlobal">
-             <sleepTime>2000</sleepTime>
+             <sleepTime>10000</sleepTime>
         </object>
     </set-global>
 
