@@ -81,7 +81,7 @@ The Rules Management CDI bean then manages the rules engine assigned to that dep
 +
 Many rules use-cases benefit from a SINGLETON KIESession whose scope is the life of a BPM Suite 6 Deployment Unit.
 Some use-cases however are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
-When using a stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
+When using a PER_REQUEST session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
 Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
 A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
 This reference architecture provides an API that allows for interaction with both SINGELTON and PER_REQUEST KIE sessions.
@@ -283,7 +283,7 @@ response:  None. Check BPM Suite 6 server.log
 
 ==== PER_REQUEST KIE Session
 Some rules use-cases are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
-When using a stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
+When using a PER_REQUEST session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
 Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
 A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
 
@@ -296,13 +296,13 @@ curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/dep
 
 . *execute batch command*:
 +
-Supports use-cases requiring a stateless KIESession.
+Supports use-cases requiring a PER_REQUEST KIESession.
 HTTP payload consists of XML representation of the org.kie.api.command.BatchExecutionCommand.
-All batch commands included in the http payload are executed in the stateless kie session in a single transaction.
+All batch commands included in the http payload are executed in the PER_REQUEST kie session in a single transaction.
 Accepts a query parameter called _fqns_ which consists of a *-* delimited String of your domain model's fqns that will be passed in the batch execution command.
 +
 ------
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/stateless?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker"
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/perrequest?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker"
 ------
 +
 response: XML representation of facts added to working memory.
