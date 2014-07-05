@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 /*
  * RESTful API that exposes the functionality provided by the rules management CDI bean.
- * Supports invocation of both Stateful and Stateless KIESessions
+ * Supports invocation of both SINGLETON and PER_REQUEST KIESession strategies
  * 
  * addition of @Stateless annotation provides following advantages:
  *
@@ -215,15 +215,15 @@ public class RulesMgmtResource {
     
     /**
      * purpose:
-     *   - support use-cases requiring a stateless KIESession
+     *   - support use-cases requiring a PER_REQUEST KIESession
      *   
      * sample usage :
-     *   curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/stateless?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker"
+     *   curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/perrequest?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker"
      *  
      * fqns query param:  '-' delimited String of your domain model's fqns that will be passed in the batch execution command
      */
     @POST
-    @Path("/{deploymentId: .*}/stateless")
+    @Path("/{deploymentId: .*}/perrequest")
     @Consumes({"application/json","application/xml"})
     @Produces({ "application/xml" })
     public Response execute(@PathParam("deploymentId") final String deploymentId, @QueryParam("fqns") final String fqnsString, InputStream commandStream){
