@@ -8,22 +8,26 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/*
+ *  Purpose:  used as a global variable for bpm_rulesMgmt test scenario
+ */
+
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "PolicyTracker", propOrder = {
-    "processedCount"
+@XmlType(name = "PolicyGlobal", propOrder = {
+    "sleepTime"
 })
-@XmlRootElement(name="PolicyTracker")
-public class PolicyTracker implements Serializable {
+@XmlRootElement(name="PolicyGlobal")
+public class PolicyGlobal implements Serializable {
     
     private static final long serialVersionUID = 2661926848351583891L;
-    private int processedCount;
+    private int sleepTime;
     
-    public int getProcessedCount() {
-        return processedCount;
+    public int getSleepTime() {
+        return sleepTime;
     }
     
-    public void setProcessedCount(int x) {
-        this.processedCount = x;
+    public void setSleepTime(int x) {
+        this.sleepTime = x;
     }
 
 }

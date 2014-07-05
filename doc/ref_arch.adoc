@@ -189,11 +189,18 @@ This session strategy provides a single KIE Session whose scope is a deployment 
 Operations on a SINGLETON KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
 This strategy is ideal for rules use cases that involve large number of facts and rules where it is desirable that the session not be disposed.
 
-
-. *insert global*: insert an application specific global (called: pTracker) into the working memory of the rules engine assigned to a deployment unit:
+. *deploy a KIE project and specify SINGLETON session strategy*:
+Before executing the following command, ensure that a previous deployment unit with the same GAV does not already exist.
 +
 -----
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyTracker.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/global/pTracker?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker
+curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=SINGLETON
+-----
+
+
+. *insert global*: insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:
++
+-----
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyGlobal.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/global/pGlobal?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal
 -----
 
 +
@@ -288,7 +295,7 @@ Since a PER_REQUEST KIE Session will never be re-used, its state is not persiste
 A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
 
 . *deploy a KIE project and specify PER_REQUEST session strategy*:
-Before executing the following command, ensure that a previous deployment with the same GAV does not already exist.
+Before executing the following command, ensure that a previous deployment unit with the same GAV does not already exist.
 +
 -----
 curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
@@ -302,7 +309,7 @@ All batch commands included in the http payload are executed in the PER_REQUEST 
 Accepts a query parameter called _fqns_ which consists of a *-* delimited String of your domain model's fqns that will be passed in the batch execution command.
 +
 ------
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/perrequest?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker"
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/perrequest?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal"
 ------
 +
 response: XML representation of facts added to working memory.

@@ -12,9 +12,9 @@
              <driverName>azra</driverName>
         </object>
     </insert>
-    <set-global identifier="pTracker">
-        <object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PolicyTracker">
-             <processedCount>0</processedCount>
+    <set-global identifier="pGlobal">
+        <object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PolicyGlobal">
+             <sleepTime>2000</sleepTime>
         </object>
     </set-global>
 

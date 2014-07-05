@@ -22,7 +22,7 @@ import org.drools.core.command.runtime.rule.InsertObjectCommand;
 
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver;
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy;
-import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
+import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal;
 
 public class MarshalObjects {
 
@@ -41,9 +41,9 @@ public class MarshalObjects {
         Policy unmarshalledPObj =jsonMapper.readValue(marshalledString, Policy.class);
         System.out.println("main() policy obj = "+unmarshalledPObj);
         
-        PolicyTracker pTracker = new PolicyTracker();
-        pTracker.setProcessedCount(0);
-        System.out.println("main() pTracker = "+jsonMapper.writeValueAsString(pTracker));
+        PolicyGlobal pGlobal = new PolicyGlobal();
+        pGlobal.setProcessedCount(0);
+        System.out.println("main() pGlobal = "+jsonMapper.writeValueAsString(pGlobal));
     }
     
     public Response executeTest(@PathParam("deploymentId") final String deploymentId ) throws JAXBException {
@@ -64,18 +64,18 @@ public class MarshalObjects {
         insertDriver.setOutIdentifier("driverOut");
         commandList.add(insertDriver);
         
-        PolicyTracker pTracker = new PolicyTracker();
-        pTracker.setProcessedCount(0);
+        PolicyGlobal pGlobal = new PolicyGlobal();
+        pGlobal.setProcessedCount(0);
         SetGlobalCommand setGlobal = new SetGlobalCommand();
-        setGlobal.setObject(pTracker);
-        setGlobal.setIdentifier("pTracker");
+        setGlobal.setObject(pGlobal);
+        setGlobal.setIdentifier("pGlobal");
         commandList.add(setGlobal);
         
         FireAllRulesCommand fireCommand = new FireAllRulesCommand();
         commandList.add(fireCommand);
         BatchExecutionCommandImpl batchCommand = new BatchExecutionCommandImpl(commandList);
         
-        JAXBContext jc = JAXBContext.newInstance(BatchExecutionCommandImpl.class,Driver.class, Policy.class, PolicyTracker.class);
+        JAXBContext jc = JAXBContext.newInstance(BatchExecutionCommandImpl.class,Driver.class, Policy.class, PolicyGlobal.class);
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(batchCommand, System.out);
