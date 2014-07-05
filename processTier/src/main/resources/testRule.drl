@@ -15,7 +15,7 @@ rule "testRule"
     }
     System.out.println("testRule() sleepTime = "+sleepTime);
     Thread.sleep(sleepTime);
-    System.out.println("testRule() done sleeping. kieSessionId = "+drools.getWorkingMemory().getId());
+    System.out.println("testRule() done sleeping. kieSessionId = "+drools.getWorkingMemory().clearAgenda());
     
 end  
 
