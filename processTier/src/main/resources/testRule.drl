@@ -1,22 +1,20 @@
 package com.redhat.gpe.refarch.bpm_rulesMgmt.processTier;
 
 import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy;
-import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
+import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal;
 
-global PolicyTracker pTracker;
+global PolicyGlobal pGlobal;
 
 rule "testRule"
   when
       $policy : Policy()
   then
+    int sleepTime = 1000;
      if(pTracker != null) {
-         int count = pTracker.getProcessedCount();
-         pTracker.setProcessedCount(count++);
-         System.out.println("testRule() processedCount = "+pTracker.getProcessedCount());
-    } else {
-        System.out.println("testRule() pTracker global is null");
+         sleepTime = pGlobal.getSleepTime();
     }
-    Thread.sleep(5000);
+    System.out.println("testRule() sleepTime = "+sleepTime);
+    Thread.sleep(sleepTime);
     System.out.println("testRule() done sleeping");
     
 end  
