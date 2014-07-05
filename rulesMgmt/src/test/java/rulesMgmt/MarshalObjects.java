@@ -42,7 +42,7 @@ public class MarshalObjects {
         System.out.println("main() policy obj = "+unmarshalledPObj);
         
         PolicyGlobal pGlobal = new PolicyGlobal();
-        pGlobal.setProcessedCount(0);
+        pGlobal.setSleepTime(0);
         System.out.println("main() pGlobal = "+jsonMapper.writeValueAsString(pGlobal));
     }
     
@@ -65,7 +65,7 @@ public class MarshalObjects {
         commandList.add(insertDriver);
         
         PolicyGlobal pGlobal = new PolicyGlobal();
-        pGlobal.setProcessedCount(0);
+        pGlobal.setSleepTime(0);
         SetGlobalCommand setGlobal = new SetGlobalCommand();
         setGlobal.setObject(pGlobal);
         setGlobal.setIdentifier("pGlobal");
