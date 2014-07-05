@@ -77,12 +77,14 @@ KIE projects are deployed as per your normal procedures using BPM Suite 6.
 KIE Base and KIE Session specifics are configured during creation of the deployment unit.
 The Rules Management CDI bean then manages the rules engine assigned to that deployment unit.
 
-. *Supports Stateful and Stateless KIESessions*
+. *Supports SINGLETON and PER_REQUEST scoped KIESessions*
 +
-The majority of rules use-cases benefit from a stateful KIESession.
-Some use-cases however are better served with a stateless KIESession where the life of the session is a single transaction.
+Many rules use-cases benefit from a SINGLETON KIESession whose scope is the life of a BPM Suite 6 Deployment Unit.
+Some use-cases however are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
 When using a stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
-This reference architecture provides an API that allows for interaction with either a stateful or stateless session.
+Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
+A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
+This reference architecture provides an API that allows for interaction with both SINGELTON and PER_REQUEST KIE sessions.
 
 
 . *API*
@@ -181,7 +183,12 @@ curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-centr
 +
 response:  good to go
 
-==== Stateful KIE Session
+==== SINGLETON KIE Session
+A SINGLETON KIE session is the default session strategy used when clicking the _Build and Deploy_ button of the _Project Editor_ of the BPM Console.
+This session strategy provides a single KIE Session whose scope is a deployment unit.
+Operations on a SINGLETON KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
+This strategy is ideal for rules use cases that involve large number of facts and rules where it is desirable that the session not be disposed.
+
 
 . *insert global*: insert an application specific global (called: pTracker) into the working memory of the rules engine assigned to a deployment unit:
 +
@@ -274,7 +281,18 @@ curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtRes
 +
 response:  None. Check BPM Suite 6 server.log
 
-==== Stateless KIE Session
+==== PER_REQUEST KIE Session
+Some rules use-cases are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
+When using a stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
+Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
+A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
+
+. *deploy a KIE project and specify PER_REQUEST session strategy*:
+Before executing the following command, ensure that a previous deployment with the same GAV does not already exist.
++
+-----
+curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
+-----
 
 . *execute batch command*:
 +

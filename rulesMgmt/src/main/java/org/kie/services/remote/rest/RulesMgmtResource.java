@@ -241,14 +241,14 @@ public class RulesMgmtResource {
         classes[0] = BatchExecutionCommandImpl.class;
         int f=1;
         for(String fqn: fqns){
-        	try {
-				Class fqnClass = Class.forName(fqn);
-				classes[f] = fqnClass;
-				f++;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				return Response.status(Status.BAD_REQUEST).build();
-			}
+            try {
+                Class fqnClass = Class.forName(fqn);
+                classes[f] = fqnClass;
+                f++;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                return Response.status(Status.BAD_REQUEST).build();
+            }
         }
         
         BatchExecutionCommandImpl batchCommand = null;

@@ -26,7 +26,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <dependency>
         <groupId>org.jboss.ip.component.management</groupId>
         <artifactId>ip-dependency-management-all</artifactId>
-        <version>1.2-redhat-8</version>
+        <version>1.2-redhat-13</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -58,24 +58,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <dependency>
       <groupId>org.kie</groupId>
       <artifactId>kie-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-internal</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.remote</groupId>
-      <!--artifactId>kie-services-client</artifactId -->
-      <artifactId>kie-services-remote</artifactId>
-      <version>6.0.2-redhat-6</version>
-    </dependency>
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-ci</artifactId>
     </dependency>
   </dependencies>
 </project>

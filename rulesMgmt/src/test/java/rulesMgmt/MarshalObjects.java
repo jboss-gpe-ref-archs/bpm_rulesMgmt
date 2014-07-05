@@ -27,7 +27,7 @@ import com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyTracker;
 public class MarshalObjects {
 
     public static void main(String[] args) throws JsonGenerationException, JsonMappingException, IOException {
-    	marshallTestDomain();
+        marshallTestDomain();
     }
     public static void marshallTestDomain() throws JsonGenerationException, JsonMappingException, IOException {
         Policy pObj = new Policy();
@@ -47,40 +47,40 @@ public class MarshalObjects {
     }
     
     public Response executeTest(@PathParam("deploymentId") final String deploymentId ) throws JAXBException {
-    	List<GenericCommand<?>> commandList = new ArrayList<GenericCommand<?>>();
-    	Policy pObj = new Policy();
-    	pObj.setPolicyId(234);
-    	pObj.setPolicyName("werwer");
-    	InsertObjectCommand insertPolicy = new InsertObjectCommand();
-    	insertPolicy.setObject(pObj);
-    	insertPolicy.setOutIdentifier("policyOut");
-    	commandList.add(insertPolicy);
-    	
-    	Driver dObj = new Driver();
-    	dObj.setDriverId(234234);
-    	dObj.setDriverName("azra");
-    	InsertObjectCommand insertDriver = new InsertObjectCommand();
-    	insertDriver.setObject(dObj);
-    	insertDriver.setOutIdentifier("driverOut");
-    	commandList.add(insertDriver);
-    	
-    	PolicyTracker pTracker = new PolicyTracker();
-    	pTracker.setProcessedCount(0);
-    	SetGlobalCommand setGlobal = new SetGlobalCommand();
-    	setGlobal.setObject(pTracker);
-    	setGlobal.setIdentifier("pTracker");
-    	commandList.add(setGlobal);
-    	
-    	FireAllRulesCommand fireCommand = new FireAllRulesCommand();
-    	commandList.add(fireCommand);
-    	BatchExecutionCommandImpl batchCommand = new BatchExecutionCommandImpl(commandList);
-    	
-    	JAXBContext jc = JAXBContext.newInstance(BatchExecutionCommandImpl.class,Driver.class, Policy.class, PolicyTracker.class);
+        List<GenericCommand<?>> commandList = new ArrayList<GenericCommand<?>>();
+        Policy pObj = new Policy();
+        pObj.setPolicyId(234);
+        pObj.setPolicyName("werwer");
+        InsertObjectCommand insertPolicy = new InsertObjectCommand();
+        insertPolicy.setObject(pObj);
+        insertPolicy.setOutIdentifier("policyOut");
+        commandList.add(insertPolicy);
+        
+        Driver dObj = new Driver();
+        dObj.setDriverId(234234);
+        dObj.setDriverName("azra");
+        InsertObjectCommand insertDriver = new InsertObjectCommand();
+        insertDriver.setObject(dObj);
+        insertDriver.setOutIdentifier("driverOut");
+        commandList.add(insertDriver);
+        
+        PolicyTracker pTracker = new PolicyTracker();
+        pTracker.setProcessedCount(0);
+        SetGlobalCommand setGlobal = new SetGlobalCommand();
+        setGlobal.setObject(pTracker);
+        setGlobal.setIdentifier("pTracker");
+        commandList.add(setGlobal);
+        
+        FireAllRulesCommand fireCommand = new FireAllRulesCommand();
+        commandList.add(fireCommand);
+        BatchExecutionCommandImpl batchCommand = new BatchExecutionCommandImpl(commandList);
+        
+        JAXBContext jc = JAXBContext.newInstance(BatchExecutionCommandImpl.class,Driver.class, Policy.class, PolicyTracker.class);
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(batchCommand, System.out);
-    	
-    	return Response.status(Status.OK).build();
+        
+        return Response.status(Status.OK).build();
     }
 
 }

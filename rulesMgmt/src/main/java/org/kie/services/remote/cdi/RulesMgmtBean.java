@@ -16,12 +16,16 @@ import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
+import org.drools.compiler.kproject.ReleaseIdImpl;
 import org.kie.api.KieBase;
+import org.kie.api.KieServices;
+import org.kie.api.builder.ReleaseId;
 import org.kie.api.command.BatchExecutionCommand;
 import org.kie.api.command.Command;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.rule.Rule;
 import org.kie.api.runtime.ExecutionResults;
+import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.manager.RuntimeEngine;
 import org.kie.api.runtime.manager.RuntimeManager;
@@ -29,7 +33,7 @@ import org.kie.api.runtime.manager.Context;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.command.CommandFactory;
 import org.kie.internal.runtime.manager.context.EmptyContext;
-import org.kie.services.remote.cdi.DeploymentInfoBean;
+import org.kie.remote.services.cdi.DeploymentInfoBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,7 +190,7 @@ public class RulesMgmtBean implements IRulesMgmt {
     }
     
     public ExecutionResults execute(String deploymentId, BatchExecutionCommand batchCommand) {
-        KieSession kSession = getKieSession(deploymentId);
+        KieSession kSession = getKieSession(deploymentId, true);
         ExecutionResults eResults = kSession.execute(batchCommand);
         return eResults;
     }
@@ -196,11 +200,16 @@ public class RulesMgmtBean implements IRulesMgmt {
         kSession.dispose();
         sessionMap.remove(deploymentId);
     }
+    
+    private KieSession getKieSession(String deploymentId){
+        return this.getKieSession(deploymentId, false);
+    }
 
-    private KieSession getKieSession(String deploymentId) {
-        if(sessionMap.get(deploymentId) != null)
-            return sessionMap.get(deploymentId);
-        
+    private KieSession getKieSession(String deploymentId, boolean stateless) {
+        if(!stateless){
+            if(sessionMap.get(deploymentId) != null)
+                return sessionMap.get(deploymentId);
+        }
         
         RuntimeManager runtimeManager = dInfoBean.getRuntimeManager(deploymentId);
         if (runtimeManager == null) {
@@ -216,7 +225,9 @@ public class RulesMgmtBean implements IRulesMgmt {
         Context<?> runtimeContext = EmptyContext.get();
         RuntimeEngine rEngine = runtimeManager.getRuntimeEngine(runtimeContext);
         KieSession kSession = rEngine.getKieSession();
-        sessionMap.put(deploymentId, kSession);
+        
+        if(!stateless)
+            sessionMap.put(deploymentId, kSession);
         return kSession;
     }
     
