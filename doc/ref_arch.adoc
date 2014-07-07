@@ -180,12 +180,11 @@ The test examples assume that they are being executed from the root directory of
 === Sample RESTful Test Commands
 
 *sanity check*:  ensure that the REST service is properly started:
-+
+
 -----
 curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-central/rest/RulesMgmtResource/sanityCheck
 -----
 
-+
 response:  good to go
 
 ==== SINGLETON KIE Session
