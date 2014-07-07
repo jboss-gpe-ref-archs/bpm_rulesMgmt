@@ -78,6 +78,7 @@ KIE projects are deployed as per your normal procedures using BPM Suite 6.
 KIE Base and KIE Session specifics are configured during creation of the deployment unit.
 The Rules Management CDI bean then manages the rules engine assigned to that deployment unit.
 
++
 Deployment Units are a BPM Suite 6 concept only.
 Deployment unit functionality is not applicable to BRM Suite 6.
 Subquently, this bpm_rulesMgmt functionality is applicable to BPM Suite 6 only.
