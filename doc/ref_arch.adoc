@@ -21,6 +21,7 @@ BPM Suite 6 includes an _Execution Server_ that allows for remote invocation of 
 The BPM Suite 6 Execution Server does not allow for remote invocation of its rules engine.
 
 The purpose of this reference architecture is to provide a remoteable API to invoke the rules engine of BPM Suite 6.
+This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
 
 There are several components to the example solution provided in this reference architecture.
 Some of the components are generic and should not need additional customization.
@@ -82,6 +83,12 @@ The Rules Management CDI bean then manages the rules engine assigned to that dep
 Deployment Units are a BPM Suite 6 concept only.
 Deployment unit functionality is not applicable to BRM Suite 6.
 Subquently, this bpm_rulesMgmt functionality is applicable to BPM Suite 6 only.
+
++
+The RulesMgmt CDI bean is itself injected with the following CDI bean at run-time:  org.kie.remote.services.cdi.DeploymentInfoBean.
+This DeploymentInfoBean listens for and manages the state of DeploymentUnits in the Execution Server of BPM Suite 6.
+Subsequently, the RulesMgmt CDI bean provided in this project is intended to be co-located with the Execution Server of BPM Suite 6.
+Specifically, the _bpm_rulesMgmt.jar_ library provided by this project will be added to the business-central.war/WEB-INF/lib directory of BPM Suite 6 (discussed in the _set-up_ section of this documentation).
 
 . *Supports SINGLETON and PER_REQUEST scoped KIESessions*
 +
@@ -323,11 +330,5 @@ In order for facts to be returned the following attributes need to be included i
 
 .. return-object="true"
 .. out-identifier="<your identifier>"
-
-+
-Because the KIE session strategy to use in conjunction with this _execute batch command_ is PER_REQUEST, the KIESession that served the execute batch request is disposed (along with all facts in its working memory) when the transaction completes.
-Subsequently, the XML representation of facts are returned, not fact handles as is the case with other rules management API functions.
-Fact handles are not applicable as the response of an execute batch request because the facts that the handles would refer to do not survive beyond that request.
-
 
 == To-Do
