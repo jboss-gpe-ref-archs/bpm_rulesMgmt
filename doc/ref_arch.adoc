@@ -74,7 +74,8 @@ Introduces over-head of JAXB (un)marshalling of an applications domain model.
 === Rules Management Topics
 . *Deployment Unit aware*
 + 
-Similar to the existing BPM Suite 6 Execution Server, the Rules Management CDI bean is _Deployment Unit_ aware.
+This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
+Similar to the existing BPM Suite 6 Execution Server, the Rules Management CDI bean provided by this project is _Deployment Unit_ aware.
 KIE projects are deployed as per your normal procedures using BPM Suite 6.
 KIE Base and KIE Session specifics are configured during creation of the deployment unit.
 The Rules Management CDI bean then manages the rules engine assigned to that deployment unit.
