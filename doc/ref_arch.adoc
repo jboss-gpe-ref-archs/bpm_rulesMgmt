@@ -28,6 +28,13 @@ Some of the components are generic and should not need additional customization.
 Other components are application specific and will require customization.
 As you are going through this reference architecture, please pay particular attention to those components that require customization on your part.
 
+== LEGAL
+
+. This project is copyright of Red Hat, Inc. and distributed with an Apache 2 license
+. This project is maintained by Red Hat's Global Partner Enablement team
+. This project is a community project with no contractual support obligations
+. Please contact Red Hat to discuss support details for Red Hat's BPM Suite 6 product.
+
 === Directory Structure
 This reference architecture includes the following directories:
 

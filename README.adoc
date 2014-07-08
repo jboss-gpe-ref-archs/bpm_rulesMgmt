@@ -11,5 +11,13 @@ The purpose of this reference architecture is to provide a Rules Management API 
 
 BPM Suite 6 currently provides an _Execution Server_ that allows for remote invocation of its process engine.
 It does not however currently provide an API that allows for remote invocation of its rule engine.
+This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
 
 This reference architecture includes a {ref_arch_doc} .
+
+== LEGAL
+
+. This project is copyright of Red Hat, Inc. and distributed with an Apache 2 license
+. This project is maintained by Red Hat's Global Partner Enablement team
+. This project is a community project with no contractual support obligations
+. Please contact Red Hat to discuss support details for Red Hat's BPM Suite 6 product.
