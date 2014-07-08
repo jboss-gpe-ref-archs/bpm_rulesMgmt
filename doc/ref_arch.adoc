@@ -324,4 +324,10 @@ In order for facts to be returned the following attributes need to be included i
 .. return-object="true"
 .. out-identifier="<your identifier>"
 
++
+Because the KIE session strategy to use in conjunction with this _execute batch command_ is PER_REQUEST, the KIESession that served the execute batch request is disposed (along with all facts in its working memory) when the transaction completes.
+Subsequently, the XML representation of facts are returned, not fact handles as is the case with other rules management API functions.
+Fact handles are not applicable as the response of an execute batch request because the facts that the handles would refer to do not survive beyond that request.
+
+
 == To-Do
