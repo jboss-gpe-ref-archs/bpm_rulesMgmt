@@ -216,6 +216,17 @@ Before executing the following command, ensure that a previous deployment unit w
 curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=SINGLETON
 -----
 
++ 
+Deployment of Kie projects happens asynchroneously.
+Subsquently, it's important to query the execution server to verify that deployment has succeeded.
+
++
+-----
+curl -vv -u jboss:brms -X GET http://docker_bpms:8080/business-central/rest/deployment/
+-----
+
++
+Once deployment of the Kie project has succeeded, the remaining commands can be executed.
 
 . *insert global*: insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:
 +
@@ -320,6 +331,17 @@ Before executing the following command, ensure that a previous deployment unit w
 -----
 curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
 -----
++ 
+Deployment of Kie projects happens asynchroneously.
+Subsquently, it's important to query the execution server to verify that deployment has succeeded.
+
++
+-----
+curl -vv -u jboss:brms -X GET http://docker_bpms:8080/business-central/rest/deployment/
+-----
+
++
+Once deployment of the Kie project has succeeded, the remaining command can be executed.
 
 . *execute batch command*:
 +
