@@ -30,48 +30,6 @@ This rules management API functionality can be considered an extension to the ex
 . This project is a community project with no contractual support obligations
 . Please contact Red Hat to discuss support details for Red Hat's BPM Suite 6 product.
 
-=== Directory Structure
-This reference architecture includes the following directories:
-
-. *common*
-+
-This reference architecture includes an {irulesmgmt} interface.
-This IRulesMgmt interface is implemented by a CDI bean that manages the rules engine assigned to a _Deployment Unit_ .
-The IRulesMgmt interface and CDI bean implementation are generic and should not require customization.
-+
-This reference architecture also includes an {irulesmgmtservice} interface.
-Its implementation is an EJB that wraps transaction and remoting capabilties around the core rules management CDI bean.
-This IRulesMgmtService is also generic and should not require customization.
-If your application makes use of EJB clients (either local or remote), then this is the interface to invoke.
-
-. *domain*
-+
-Example application domain model classes used in this reference architecture to demonstrate capability of Rules Management API functionality.
-These example domain model classes contain JAXB annotations for (un)marshalling between its XML and java object representations.
-JAXB annotations in your domain model are a requirement if using the RESTful API provided by this reference architecture.
-
-. *processTier*
-+
-Example KIE project that includes a single rule.
-This example KIE project is invoked by remote clients via the rules management API functionality provided in this reference architecture.
-
-. *rulesMgmt*:  Provides the following:
-.. Rules Management CDI bean
-+
-Similar to the existing BPM Suite 6 Execution Server, this Rules Management CDI bean is _Deployment Unit_ aware.
-The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object to insert facts and globals into the working memory of the rules engine.
-The Rules Management CDI bean can be wrapped and exposed using a variety of different transports.
-ie:  A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
-
-.. Rules Management EJB Service
-+
-Allows for local and/or remote EJB clients to invoke the Rules Management API in a performant, transactional manner.
-If an application needs the rulesMgmt functionality to participate in an 2-phase commit transaction, integration with this EJB interface is recommended.
-
-.. Rules Management RESTful service
-+
-Allows for invocation of the Rules Management API via http.
-Introduces over-head of JAXB (un)marshalling of an applications domain model.
 
 === Rules Management Topics
 . *Deployment Unit aware*
@@ -124,6 +82,50 @@ However, this ruleMgmt API does not inspect the classpath created by the KIE pro
 +
 Some RESTful resources require the addition of a _fqn_ or _fqns_ query parameter to the URL.
 These _fqn_ parameters are used when constructing the JAXB Context used to (un)marshall your domain model classes.
+
+
+=== Directory Structure
+This reference architecture includes the following directories:
+
+. *common*
++
+This reference architecture includes an {irulesmgmt} interface.
+This IRulesMgmt interface is implemented by a CDI bean that manages the rules engine assigned to a _Deployment Unit_ .
+The IRulesMgmt interface and CDI bean implementation are generic and should not require customization.
++
+This reference architecture also includes an {irulesmgmtservice} interface.
+Its implementation is an EJB that wraps transaction and remoting capabilties around the core rules management CDI bean.
+This IRulesMgmtService is also generic and should not require customization.
+If your application makes use of EJB clients (either local or remote), then this is the interface to invoke.
+
+. *domain*
++
+Example application domain model classes used in this reference architecture to demonstrate capability of Rules Management API functionality.
+These example domain model classes contain JAXB annotations for (un)marshalling between its XML and java object representations.
+JAXB annotations in your domain model are a requirement if using the RESTful API provided by this reference architecture.
+
+. *processTier*
++
+Example KIE project that includes a single rule.
+This example KIE project is invoked by remote clients via the rules management API functionality provided in this reference architecture.
+
+. *rulesMgmt*:  Provides the following:
+.. Rules Management CDI bean
++
+Similar to the existing BPM Suite 6 Execution Server, this Rules Management CDI bean is _Deployment Unit_ aware.
+The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object to insert facts and globals into the working memory of the rules engine.
+The Rules Management CDI bean can be wrapped and exposed using a variety of different transports.
+ie:  A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
+
+.. Rules Management EJB Service
++
+Allows for local and/or remote EJB clients to invoke the Rules Management API in a performant, transactional manner.
+If an application needs the rulesMgmt functionality to participate in an 2-phase commit transaction, integration with this EJB interface is recommended.
+
+.. Rules Management RESTful service
++
+Allows for invocation of the Rules Management API via http.
+Introduces over-head of JAXB (un)marshalling of an applications domain model.
 
 
 == Pre-Requisites
