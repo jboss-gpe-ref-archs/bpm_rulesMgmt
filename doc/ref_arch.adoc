@@ -5,6 +5,7 @@
 :dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
 :irulesmgmt: link:../common/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
 :irulesmgmtservice: link:../common/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
+:kieserver: link:https://github.com/droolsjbpm/droolsjbpm-integration/tree/master/kie-server[drools kie server]
 
 image::images/rhheader.png[width=900]
 
@@ -83,6 +84,10 @@ However, this ruleMgmt API does not inspect the classpath created by the KIE pro
 Some RESTful resources require the addition of a _fqn_ or _fqns_ query parameter to the URL.
 These _fqn_ parameters are used when constructing the JAXB Context used to (un)marshall your domain model classes.
 
+=== Alternatives
+The [kieserver] project is expected to be included in BRM Suite 6.1 .
+This functionality will be a leaner implementation of the existing BPM Suite 6 Execution Server and more suitable for cloud environments.
+The current BPM exec server includes a lot of dependencies that will be eliminated in this new implementation.
 
 === Directory Structure
 This reference architecture includes the following directories:
