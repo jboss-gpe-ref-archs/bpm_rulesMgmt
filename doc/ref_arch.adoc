@@ -23,11 +23,6 @@ The BPM Suite 6 Execution Server does not allow for remote invocation of its rul
 The purpose of this reference architecture is to provide a remoteable API to invoke the rules engine of BPM Suite 6.
 This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
 
-There are several components to the example solution provided in this reference architecture.
-Some of the components are generic and should not need additional customization.
-Other components are application specific and will require customization.
-As you are going through this reference architecture, please pay particular attention to those components that require customization on your part.
-
 === LEGAL
 
 . This project is copyright of Red Hat, Inc. and distributed with an Apache 2 license
