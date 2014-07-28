@@ -113,8 +113,8 @@ Details of each function can be found in the {irulesmgmt} interface.
 Add your domain model classes to the java classpath of the business-central web archive of BPM Suite 6.
 This is typically done via either of the following:
 
-. add domain model libraries to business-central.war/WEB-INF/lib
-. deploy your doman model libraries as static JBoss modules and define an explicit dependency in the business-central web archive to this static JBoss module.
+.. add domain model libraries to business-central.war/WEB-INF/lib
+.. deploy your doman model libraries as static JBoss modules and define an explicit dependency in the business-central web archive to this static JBoss module.
 
 +
 Related, there is not a need to define dependencies to your domain model classes in the pom.xml of your KIE project.
