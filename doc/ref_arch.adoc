@@ -6,6 +6,7 @@
 :irulesmgmt: link:../common/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
 :irulesmgmtservice: link:../common/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
 "drools-execution-server: link:http://blog.athico.com/2014/08/drools-execution-server-demo-620beta1.html[Drools Execution Server]
+:kieserver: link:https://github.com/droolsjbpm/droolsjbpm-integration/tree/master/kie-server[drools kie server]
 
 image::images/rhheader.png[width=900]
 
@@ -27,17 +28,70 @@ Once merged into a supported BRMS release, this reference architecture becomes o
 The purpose of this reference architecture is to provide a remoteable API to invoke the rules engine of BPM Suite 6.
 This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
 
-There are several components to the example solution provided in this reference architecture.
-Some of the components are generic and should not need additional customization.
-Other components are application specific and will require customization.
-As you are going through this reference architecture, please pay particular attention to those components that require customization on your part.
-
 === LEGAL
 
 . This project is copyright of Red Hat, Inc. and distributed with an Apache 2 license
 . This project is maintained by Red Hat's Global Partner Enablement team
 . This project is a community project with no contractual support obligations
 . Please contact Red Hat to discuss support details for Red Hat's BPM Suite 6 product.
+
+
+=== Rules Management Topics
+. *Deployment Unit aware*
++ 
+This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
+Similar to the existing BPM Suite 6 Execution Server, the Rules Management CDI bean provided by this project is _Deployment Unit_ aware.
+KIE projects are deployed as per your normal procedures using BPM Suite 6.
+KIE Base and KIE Session specifics are configured during creation of the deployment unit.
+The Rules Management CDI bean provided by this project then allows for remote invocation of the rules engine assigned to that deployment unit.
+
++
+Deployment Units are a BPM Suite 6 concept only.
+Deployment unit functionality is not applicable to BRM Suite 6.
+Subquently, this bpm_rulesMgmt functionality is applicable to BPM Suite 6 only.
+
++
+The RulesMgmt CDI bean is itself injected with the following CDI bean at run-time:  org.kie.remote.services.cdi.DeploymentInfoBean.
+This DeploymentInfoBean listens for and manages the state of DeploymentUnits in the Execution Server of BPM Suite 6.
+Subsequently, the RulesMgmt CDI bean provided in this project is intended to be co-located with the Execution Server of BPM Suite 6.
+Specifically, the _bpm_rulesMgmt.jar_ library provided by this project will be added to the business-central.war/WEB-INF/lib directory of BPM Suite 6 (discussed in the _set-up_ section of this documentation).
+
+. *Supports SINGLETON and PER_REQUEST scoped KIESessions*
++
+Many rules use-cases benefit from a SINGLETON KIESession whose scope is the life of a BPM Suite 6 Deployment Unit.
+Some use-cases however are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
+When using a PER_REQUEST session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
+Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
+A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
+This reference architecture provides an API that allows for interaction with both SINGELTON and PER_REQUEST KIE sessions.
+
+
+. *API*
++
+The API provided by the Rules Management CDI bean is straight-forward.
+Details of each function can be found in the {irulesmgmt} interface.
+
+. *Domain Model Classes*
++
+Add your domain model classes to the java classpath of the business-central web archive of BPM Suite 6.
+This is typically done via either of the following:
+
+.. add domain model libraries to business-central.war/WEB-INF/lib
+.. deploy your doman model libraries as static JBoss modules and define an explicit dependency in the business-central web archive to this static JBoss module.
+
++
+Related, there is not a need to define dependencies to your domain model classes in the pom.xml of your KIE project.
+You may choose to define dependencies to your domain model in the pom.xml of your KIE project (ie:  for design-time requirements imposed by the various editors of the BPM Console).
+However, this ruleMgmt API does not inspect the classpath created by the KIE project when resolving classes .... only the java classpath.
+
++
+Some RESTful resources require the addition of a _fqn_ or _fqns_ query parameter to the URL.
+These _fqn_ parameters are used when constructing the JAXB Context used to (un)marshall your domain model classes.
+
+=== Alternatives
+The {kieserver} project is expected to be included in BRM Suite 6.1 .
+This functionality will be a leaner implementation of the existing BPM Suite 6 Execution Server and more suitable for cloud environments.
+The current BPM exec server includes a lot of dependencies that will be eliminated in this new implementation.
 
 === Directory Structure
 This reference architecture includes the following directories:
@@ -81,53 +135,6 @@ If an application needs the rulesMgmt functionality to participate in an 2-phase
 +
 Allows for invocation of the Rules Management API via http.
 Introduces over-head of JAXB (un)marshalling of an applications domain model.
-
-=== Rules Management Topics
-. *Deployment Unit aware*
-+ 
-This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
-Similar to the existing BPM Suite 6 Execution Server, the Rules Management CDI bean provided by this project is _Deployment Unit_ aware.
-KIE projects are deployed as per your normal procedures using BPM Suite 6.
-KIE Base and KIE Session specifics are configured during creation of the deployment unit.
-The Rules Management CDI bean provided by this project then allows for remote invocation of the rules engine assigned to that deployment unit.
-
-+
-Deployment Units are a BPM Suite 6 concept only.
-Deployment unit functionality is not applicable to BRM Suite 6.
-Subquently, this bpm_rulesMgmt functionality is applicable to BPM Suite 6 only.
-
-+
-The RulesMgmt CDI bean is itself injected with the following CDI bean at run-time:  org.kie.remote.services.cdi.DeploymentInfoBean.
-This DeploymentInfoBean listens for and manages the state of DeploymentUnits in the Execution Server of BPM Suite 6.
-Subsequently, the RulesMgmt CDI bean provided in this project is intended to be co-located with the Execution Server of BPM Suite 6.
-Specifically, the _bpm_rulesMgmt.jar_ library provided by this project will be added to the business-central.war/WEB-INF/lib directory of BPM Suite 6 (discussed in the _set-up_ section of this documentation).
-
-. *Supports SINGLETON and PER_REQUEST scoped KIESessions*
-+
-Many rules use-cases benefit from a SINGLETON KIESession whose scope is the life of a BPM Suite 6 Deployment Unit.
-Some use-cases however are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
-When using a PER_REQUEST session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
-Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
-A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
-This reference architecture provides an API that allows for interaction with both SINGELTON and PER_REQUEST KIE sessions.
-
-
-. *API*
-+
-The API provided by the Rules Management CDI bean is straight-forward.
-Details of each function can be found in the {irulesmgmt} interface.
-
-. *Domain Model Classes*
-+
-Add your domain model classes to the classpath of the business-central web archive of BPM Suite 6.
-This is typically done via either of the following:
-
-.. add domain model libraries to business-central.war/WEB-INF/lib
-.. deploy your doman model libraries as static JBoss modules and define an explicit dependency in the business-central web archive to this static JBoss module.
-
-+
-Some RESTful resources require the addition of a _fqn_ or _fqns_ query parameter to the URL.
-These query parameters are registered with the JAXB (un)marshaller.
 
 
 == Pre-Requisites
@@ -223,8 +230,16 @@ curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/dep
 -----
 
 + 
-NOTE: the deployment unit id will be:  com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0
+Deployment of Kie projects happens asynchroneously.
+Subsquently, it's important to query the execution server to verify that deployment has succeeded.
 
++
+-----
+curl -vv -u jboss:brms -X GET http://docker_bpms:8080/business-central/rest/deployment/
+-----
+
++
+Once deployment of the Kie project has succeeded, the remaining commands can be executed.
 
 . *insert global*: insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:
 +
@@ -329,6 +344,17 @@ Before executing the following command, ensure that a previous deployment unit w
 -----
 curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
 -----
++ 
+Deployment of Kie projects happens asynchroneously.
+Subsquently, it's important to query the execution server to verify that deployment has succeeded.
+
++
+-----
+curl -vv -u jboss:brms -X GET http://docker_bpms:8080/business-central/rest/deployment/
+-----
+
++
+Once deployment of the Kie project has succeeded, the remaining command can be executed.
 
 . *execute batch command*:
 +
