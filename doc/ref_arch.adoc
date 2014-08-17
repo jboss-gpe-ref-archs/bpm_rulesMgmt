@@ -5,6 +5,7 @@
 :dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
 :irulesmgmt: link:../common/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
 :irulesmgmtservice: link:../common/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
+"drools-execution-server: link:http://blog.athico.com/2014/08/drools-execution-server-demo-620beta1.html[Drools Execution Server]
 
 image::images/rhheader.png[width=900]
 
@@ -19,6 +20,9 @@ Red Hat's Business Process Management (BPM) Suite 6 product is a super-set of it
 As such both products include a rules engine (based on technology from the open-source Drools community projects).
 BPM Suite 6 includes an _Execution Server_ that allows for remote invocation of its process engine only.
 The BPM Suite 6 Execution Server does not allow for remote invocation of its rules engine.
+
+Targeted for the upstream community 6.2.Final release of drools is a new {drools-execution-server}.
+Once merged into a supported BRMS release, this reference architecture becomes obsolete.
 
 The purpose of this reference architecture is to provide a remoteable API to invoke the rules engine of BPM Suite 6.
 This rules management API functionality can be considered an extension to the existing out-of-the-box Execution Server of BPM Suite 6.
@@ -162,10 +166,12 @@ cp rulesMgmt/target/bpm_rulesMgmt.jar $JBOSS_HOME/standalone/deployments/busines
 -----
 
 . start BPM Suite 6
-. clone this reference architecture in BPM Suite 6
-. deploy the _processTier_ KIE project included in this reference architecture.
-+ 
-NOTE: the deployment unit id will be:  com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0
+. clone this reference architecture in BPM Suite 6 and name the new git repository:  _bpmrulesmgmt_
+. build the _processTier_ KIE project included in this reference architecture.
++
+-----
+curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/compile
+-----
 
 == Test
 This reference architecture includes a RESTful interface to manage the rules engine assigned to a Deployment Unit.
@@ -204,7 +210,7 @@ curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-centr
 response:  good to go
 
 ==== SINGLETON KIE Session
-A SINGLETON KIE session is the default session strategy used when clicking the _Build and Deploy_ button of the _Project Editor_ of the BPM Console.
+A SINGLETON KIE session is the default session strategy.
 This session strategy provides a single KIE Session whose scope is a deployment unit.
 Operations on a SINGLETON KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
 This strategy is ideal for rules use cases that involve large number of facts and rules where it is desirable that the session not be disposed.
@@ -215,6 +221,9 @@ Before executing the following command, ensure that a previous deployment unit w
 -----
 curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=SINGLETON
 -----
+
++ 
+NOTE: the deployment unit id will be:  com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0
 
 
 . *insert global*: insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:

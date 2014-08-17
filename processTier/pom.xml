@@ -7,6 +7,9 @@
   <version>1.0</version>
   <packaging>kjar</packaging>
   <name>processTier</name>
+  <properties>
+    <bpm.version>6.0.3-redhat-4</bpm.version>
+  </properties>
   <repositories>
     <repository>
       <id>guvnor-m2-repo</id>
@@ -19,7 +22,7 @@
       <plugin>
         <groupId>org.kie</groupId>
         <artifactId>kie-maven-plugin</artifactId>
-        <version>6.0.3-redhat-1</version>
+        <version>${bpm.version}</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>

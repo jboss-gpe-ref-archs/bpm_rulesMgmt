@@ -14,7 +14,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <packaging>jar</packaging>
 
   <properties>
-
+    <bpm.version>6.0.3-redhat-4</bpm.version>
   </properties>
 
   <build>
@@ -80,7 +80,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <dependency>
       <groupId>org.kie.remote</groupId>
       <artifactId>kie-services-remote</artifactId>
-      <version>6.0.3-redhat-4</version>
+      <version>${bpm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.kie</groupId>
