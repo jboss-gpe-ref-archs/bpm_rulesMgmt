@@ -37,12 +37,13 @@ import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.services.remote.cdi.IRulesMgmt;
 import org.kie.services.remote.ejb.IRulesMgmtService;
-
+import org.kie.services.remote.ejb.IRemoteRulesMgmtService;
 
 /*
  * EJB Facade that introduces transaction boundaries and remoting interface for RulesMgmt functionality
  */
 
+@Remote(IRemoteRulesMgmtService.class)
 @Local(IRulesMgmtService.class)
 @Singleton(name="rulesMgmtService")
 @Startup
