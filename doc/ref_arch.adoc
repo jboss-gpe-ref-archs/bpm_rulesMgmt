@@ -381,7 +381,7 @@ Included in this reference architecture is a sample EJB client that invokes the 
 === Review client code
 This client project is located at `$REF_ARCH_HOME/ejb-client`.
 
-The project contains a sample java client class: `com.redhat.gpe.GPEExtensionsClient' .
+The project contains the following sample java client class: `com.redhat.gpe.GPEExtensionsClient` .
 
 === Configuration
 Pay particular attention to the properies found at:  `$REF_ARCH_HOME/ejb-client/src/main/resources/jboss-ejb-client.properties` .
