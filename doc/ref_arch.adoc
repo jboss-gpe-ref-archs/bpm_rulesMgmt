@@ -7,6 +7,7 @@
 :irulesmgmtservice: link:../common/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
 :drools-execution-server: link:http://blog.athico.com/2014/08/drools-execution-server-demo-620beta1.html[Drools Execution Server]
 :kieserver: link:https://github.com/droolsjbpm/droolsjbpm-integration/tree/master/kie-server[drools kie server]
+:ejbremotingreference: link:https://docs.jboss.org/author/display/AS71/Remote+EJB+invocations+via+JNDI+-+EJB+client+API+or+remote-naming+project[EJB Remoting Reference guide]
 
 image::images/rhheader.png[width=900]
 
@@ -373,5 +374,23 @@ In order for facts to be returned the following attributes need to be included i
 
 .. return-object="true"
 .. out-identifier="<your identifier>"
+
+== EJB Client
+Included in this reference architecture is a sample EJB client that invokes the EJB remoting tier of the bpm_rulesMgmt service.
+
+This client project is located at `$REF_ARCH_HOME/ejb-client` and it contains a sample java client class: `com.redhat.gpe.GPEExtensionsClient' .
+
+=== Configuration
+Pay particular attention to the properies found at:  `$REF_ARCH_HOME/ejb-client/src/main/resources/jboss-ejb-client.properties .
+
+Details regarding the setup of remote EJB clients in JBoss EAP 6* can be found in the {ejbremotingreference}.
+
+=== Execution
+The ejb test client can be invoked at the command line via maven as follows:
+
+-----
+cd $REF_ARCH_HOME/ejb-client
+mvn clean install -P client -DdeploymentId=com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0
+-----
 
 == To-Do
