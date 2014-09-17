@@ -378,19 +378,29 @@ In order for facts to be returned the following attributes need to be included i
 == EJB Client
 Included in this reference architecture is a sample EJB client that invokes the EJB remoting tier of the bpm_rulesMgmt service.
 
-This client project is located at `$REF_ARCH_HOME/ejb-client` and it contains a sample java client class: `com.redhat.gpe.GPEExtensionsClient' .
+=== Review client code
+This client project is located at `$REF_ARCH_HOME/ejb-client`.
+
+The project contains a sample java client class: `com.redhat.gpe.GPEExtensionsClient' .
 
 === Configuration
-Pay particular attention to the properies found at:  `$REF_ARCH_HOME/ejb-client/src/main/resources/jboss-ejb-client.properties .
+Pay particular attention to the properies found at:  `$REF_ARCH_HOME/ejb-client/src/main/resources/jboss-ejb-client.properties` .
 
-Details regarding the setup of remote EJB clients in JBoss EAP 6* can be found in the {ejbremotingreference}.
+For all of the fine details regarding setup of remote EJB clients in JBoss EAP 6*, please refer to the {ejbremotingreference}.
 
 === Execution
+The `ejb-client` project is a maven project with many dependencies on the supported JBoss EAP 6.1.1 maven repository.
+Please make sure that your maven settings.xml is configured to reference either the on-line or off-line JBoss EAP 6.1.1 maven repo.
+
 The ejb test client can be invoked at the command line via maven as follows:
 
 -----
 cd $REF_ARCH_HOME/ejb-client
 mvn clean install -P client -DdeploymentId=com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0
 -----
+
+
+=== Incorporate into your own java client
+If/when incorporating this ejb test client into your own  project, pay particular attention that all the existing maven dependencies defined in `$REF_ARCH_HOME/ejb-client/pom.xml` are included in your project as well.
 
 == To-Do
