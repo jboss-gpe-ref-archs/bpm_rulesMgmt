@@ -126,6 +126,7 @@
                                 </goals>
                                 <configuration>
                                     <mainClass>com.redhat.gpe.GPEExtensionsClient</mainClass>
+                                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
                                 </configuration>
                             </execution>
                         </executions>

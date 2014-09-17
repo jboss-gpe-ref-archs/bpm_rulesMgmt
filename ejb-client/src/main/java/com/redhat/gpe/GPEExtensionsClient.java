@@ -28,5 +28,6 @@ public class GPEExtensionsClient {
 
         log.info("main() invoking logRules() with deploymentId = "+deploymentId);
         rMgmtService.logFacts(deploymentId);
+        log.info("main() just invoked logRules()");
     }
 }
