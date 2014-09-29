@@ -236,10 +236,10 @@ For the purposes of the remainder of these instructions, this directory on your 
 
 . On the last screen of the `Clone Git Repository` pop-up, click `Finish`
 +
-Doing so will clone this `bpm_jms_exec_server` project to your local disk
+Doing so will clone this `bpm_rulesMgmt` project to your local disk
 
 . In JBDS, switch to the `Project Explorer` panel and navigate to:  `File -> Import -> Maven -> Existing Maven Projects`
-. In the `Root Directory` field of the `Maven Projects` pop-up, navigate to the location on disk where the `bpm_jms_exec_server` project was just cloned to.
+. In the `Root Directory` field of the `Maven Projects` pop-up, navigate to the location on disk where the `bpm_rulesMgmt` project was just cloned to.
 +
 image::images/import_mvn_project.png[]
 
