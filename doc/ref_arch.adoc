@@ -2,7 +2,6 @@
 :toc2:
 :rhtlink: link:https://www.redhat.com[Red Hat]
 :bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
-:dockerbpms: link:https://github.com/jboss-gpe-ose/docker_bpms/blob/master/doc/userguide.adoc[docker_bpms]
 :irulesmgmt: link:../common/src/main/java/org/kie/services/remote/cdi/IRulesMgmt.java[IRulesMgmt]
 :irulesmgmtservice: link:../common/src/main/java/com/redhat/gpe/refarch/bpm_rulesMgmt/IRulesMgmtService.java[IRulesMgmtService]
 :drools-execution-server: link:http://blog.athico.com/2014/08/drools-execution-server-demo-620beta1.html[Drools Execution Server]
@@ -249,7 +248,6 @@ image::images/import_mvn_project.png[]
 +
 image::images/maven_projects.png[]
 
-
 === local: Build the Reference Architecture
 This reference architecture includes various sub-projects that need to be built locally.
 To build the various sub-projects, execute the following:
@@ -260,41 +258,38 @@ To build the various sub-projects, execute the following:
 +
 image::images/maven_build_success.png[]
 
-=== BPM Suite 6: Domain jar deployment
-This reference architecture includes a subproject called `domain`.
-This sub-project contains a maven build file along with the application specific domain classes for this reference architecture.
-In `Project Explorer`, examine the domain classes and notice that they include Java Architecture for XML Binding (JAXB) annotations.
+=== BPM Suite 6: Deployment
+Now that this reference architecture has been built locally, its artifacts need to be added to the classpath of the `business-central.war` web application of the remote BPM Suite 6 enabled OpenShift application.
 
-The following are directions for deploying the jar file to your remote BPM Suite 6 server running in OpenShift.
+. Repeat these steps for the following artifacts:
 
-From your local cloned copy of this reference architecture execute the following:
+* $REF_ARCH_HOME/domain/target/bpm_rulesMgmt_domain.jar
+* $REF_ARCH_HOME/domain/target/bpm_rulesMgmt_common.jar
+* $REF_ARCH_HOME/domain/target/bpm_rulesMgmt.jar
 
-. In the `Project Explorer` panel of the `JBOSS` perspective of JBDS, right-click on the `domain/target/domain-1.0.jar` in `Project Explorer` and select `Copy`.
+.. In the `Project Explorer` panel of the `JBOSS` perspective of JBDS, right-click on the `domain/target/bpm_rulesMgmt_domain.jar` in `Project Explorer` and select `Copy`.
 +
 image::images/domainjar.png[]
 
-. In the `Remote System Explorer` perspective of JBDS, navigate to `bpmsapp-<your domain>.apps.ose.opentlc.com -> Sftp Files -> My Home -> bpms -> standalone -> deployments -> business-central.war -> WEB-INF -> lib`
-. Right-click and select `Paste`
+.. In the `Remote System Explorer` perspective of JBDS, navigate to `bpmsapp-<your domain>.apps.ose.opentlc.com -> Sftp Files -> My Home -> bpms -> standalone -> deployments -> business-central.war -> WEB-INF -> lib`
+.. Right-click and select `Paste`
 +
 image::images/pastedomainjarintobizcentral.png[]
 
-. copy project libraries to _business-central_ web archive
-+
------
-cp domain/target/bpm_rulesMgmt_domain.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
-cp common/target/bpm_rulesMgmt_common.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
-cp rulesMgmt/target/bpm_rulesMgmt.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
------
-
 . Re-start BPM Suite 6
+.. Switch back to the `OpenShift Explorer` plugin of JBDS and right-click the `bpmsapp` application
+.. Select `Restart Application`
 
 === BPM Suite 6: clone this Ref Arch
+This reference architecture contains a few simple rules that can be used to smoke-test the `bpm_rulesMgmt` services.
 
+. Navigate your browser to the BPM Console of your remote OpenShift application.
+. Authenticate using a userId of `jboss` and a password of `brms`.
 . clone this reference architecture in BPM Suite 6 and name the new git repository:  _bpmrulesmgmt_
 . build the _processTier_ KIE project included in this reference architecture.
 +
 -----
-curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/compile
+curl -vv -u jboss:brms -X POST http://bpmsapp-<your.domain.name>.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/compile
 -----
 
 == Test
@@ -307,10 +302,10 @@ This reference architecture includes a RESTful interface to manage the rules eng
 Because this reference architecture provides an example RESTful interface, the command line curl utility is used to show-case this RESTful API.
 Any http client that allows for GET, POST and DELETE functions can be used, however.
 
-. *docker_bpms*
+. *bpmsapp-gpe.apps.ose.opentlc.com*
 +
-The test examples reference a DNS name of:  _docker_bpms_.
-_docker_bpms_ is the name of the host where BPM Suite 6 is running.
+The test examples reference a DNS name of:  _bpmsapp-gpe.apps.ose.opentlc.com_.
+_bpmsapp-gpe.apps.ose.opentlc.com_ is the name of the host where BPM Suite 6 is running.
 You will want to customize these example commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running. 
 
 . *BPM Suite 6 BASIC Auth*
@@ -321,14 +316,14 @@ You will want to customize the value of -u userId:password so that curl can auth
 
 . *Directory from which to execute the test commands*
 +
-The test examples assume that they are being executed from the root directory of this reference architecture.
+The test examples assume that they are being executed from a command terminal at the root directory of this reference architecture ($REF_ARCH_HOME).
 
 === Sample RESTful Test Commands
 
 *sanity check*:  ensure that the REST service is properly started:
 
 -----
-curl -v -u jboss:brms -X GET -HAccept:text/plain docker_bpms:8080/business-central/rest/RulesMgmtResource/sanityCheck
+curl -v -u jboss:brms -X GET -HAccept:text/plain bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/sanityCheck
 -----
 
 response:  good to go
@@ -343,7 +338,7 @@ This strategy is ideal for rules use cases that involve large number of facts an
 Before executing the following command, ensure that a previous deployment unit with the same GAV does not already exist.
 +
 -----
-curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=SINGLETON
+curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=SINGLETON
 -----
 
 + 
@@ -352,7 +347,7 @@ Subsquently, it's important to query the execution server to verify that deploym
 
 +
 -----
-curl -vv -u jboss:brms -X GET http://docker_bpms:8080/business-central/rest/deployment/
+curl -vv -u jboss:brms -X GET http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/
 -----
 
 +
@@ -361,7 +356,7 @@ Once deployment of the Kie project has succeeded, the remaining commands can be 
 . *insert global*: insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:
 +
 -----
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyGlobal.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/global/pGlobal?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyGlobal.xml bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/global/pGlobal?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal
 -----
 
 +
@@ -370,7 +365,7 @@ response:  none.
 . *insert fact*: insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to a deployment unit:
 +
 -----
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact?fqn=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy
 -----
 +
 response: xml representation of fact handle corresponding to inserted fact.
@@ -378,7 +373,7 @@ response: xml representation of fact handle corresponding to inserted fact.
 . *fireAllRules*: fire all rules included in the working memory of the rules engine assigned to a deployment unit
 +
 -----
-curl -v -u jboss:brms -X POST docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fireAllRules
+curl -v -u jboss:brms -X POST bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fireAllRules
 -----
 +
 response:  number of rules fired
@@ -386,7 +381,7 @@ response:  number of rules fired
 . *get all fact handles*: return a Collection of factHandles of all the facts presently in the working memory of the rules engine
 +
 -----
-curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/factHandles > rulesMgmt/src/test/resources/fHandles.xml
+curl -v -u jboss:brms -X GET bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/factHandles > rulesMgmt/src/test/resources/fHandles.xml
 -----
 +
 response: XML representation of list of fact handles. Response is re-directed to a file.
@@ -394,7 +389,7 @@ response: XML representation of list of fact handles. Response is re-directed to
 . *get all facts*: retrieve all facts from the working memory of the rules engine assigned to a deployment unit
 +
 -----
-curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+curl -v -u jboss:brms -X GET bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
 -----
 +
 response: list of _policy_ facts in xml representation
@@ -402,7 +397,7 @@ response: list of _policy_ facts in xml representation
 . *get selected facts*: given a List of FactHandle objects, return a Collection of corresponding facts that are presently in the working memory
 +
 -----
-curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandles.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandles.xml bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
 -----
 +
 response: list of _policy_ facts in xml representation
@@ -411,7 +406,7 @@ response: list of _policy_ facts in xml representation
 . *get fact*: given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a deployment unit
 +
 -----
-curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
+curl -v -u jboss:brms -X GET -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
 -----
 +
 response: xml representation of a _policy_ fact
@@ -419,7 +414,7 @@ response: xml representation of a _policy_ fact
 . *delete all facts*: delete all previously inserted _policy_ facts from the working memory of the rules engine assigned to a deployment unit
 +
 ----
-curl -v -u jboss:brms -X DELETE docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
+curl -v -u jboss:brms -X DELETE bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts
 ----
 +
 response: integer count of facts deleted
@@ -427,7 +422,7 @@ response: integer count of facts deleted
 . *delete specific fact*: given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
 +
 -----
-curl -v -u jboss:brms -X DELETE -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
+curl -v -u jboss:brms -X DELETE -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/fHandle.xml bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/fact
 -----
 +
 response: integer count of facts deleted (1 if fact was removed, 0 if fact is not found)
@@ -435,7 +430,7 @@ response: integer count of facts deleted (1 if fact was removed, 0 if fact is no
 . *get count of all facts*: get a count of all facts from the working memory of the rules engine assigned to deployment unit
 +
 -----
-curl -v -u jboss:brms -X GET docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts/count
+curl -v -u jboss:brms -X GET bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/facts/count
 -----
 +
 response:  integer count of facts
@@ -444,7 +439,7 @@ response:  integer count of facts
 Set _showMetadata=false_ if not interested in viewing the meta-data for each rule.  (Defaults to true)
 +
 -----
-curl -v -u jboss:brms -X PUT docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules?showMetadata=true
+curl -v -u jboss:brms -X PUT bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/rules?showMetadata=true
 -----
 +
 response:  None. Check BPM Suite 6 server.log
@@ -459,7 +454,7 @@ A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
 Before executing the following command, ensure that a previous deployment unit with the same GAV does not already exist.
 +
 -----
-curl -vv -u jboss:brms -X POST http://docker_bpms:8080/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
+curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
 -----
 + 
 Deployment of Kie projects happens asynchroneously.
@@ -467,7 +462,7 @@ Subsquently, it's important to query the execution server to verify that deploym
 
 +
 -----
-curl -vv -u jboss:brms -X GET http://docker_bpms:8080/business-central/rest/deployment/
+curl -vv -u jboss:brms -X GET http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/
 -----
 
 +
@@ -481,7 +476,7 @@ All batch commands included in the http payload are executed in the PER_REQUEST 
 Accepts a query parameter called _fqns_ which consists of a *-* delimited String of your domain model's fqns that will be passed in the batch execution command.
 +
 ------
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "docker_bpms:8080/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/perrequest?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal"
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/RulesMgmtResource/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/perrequest?fqns=com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver-com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal"
 ------
 +
 response: XML representation of facts added to working memory.
