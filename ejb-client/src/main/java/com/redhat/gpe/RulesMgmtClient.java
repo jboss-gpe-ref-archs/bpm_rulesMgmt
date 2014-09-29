@@ -8,9 +8,9 @@ import javax.naming.Context;
 
 import org.kie.services.remote.ejb.IRemoteRulesMgmtService;
 
-public class GPEExtensionsClient {
+public class RulesMgmtClient {
 
-    private static final Logger log = Logger.getLogger(GPEExtensionsClient.class.getName());
+    private static final Logger log = Logger.getLogger(RulesMgmtClient.class.getName());
     private static final String GPE_EXTENSIONS_REMOTE_INTERFACE="ejb:/business-central/rulesMgmtService!org.kie.services.remote.ejb.IRemoteRulesMgmtService";
     private static final String DEPLOYMENT_ID = "deploymentId";
 

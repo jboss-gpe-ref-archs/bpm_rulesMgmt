@@ -8,6 +8,7 @@
 :drools-execution-server: link:http://blog.athico.com/2014/08/drools-execution-server-demo-620beta1.html[Drools Execution Server]
 :kieserver: link:https://github.com/droolsjbpm/droolsjbpm-integration/tree/master/kie-server[drools kie server]
 :ejbremotingreference: link:https://docs.jboss.org/author/display/AS71/Remote+EJB+invocations+via+JNDI+-+EJB+client+API+or+remote-naming+project[EJB Remoting Reference guide]
+:mwlaboverviewsetup: link:http://people.redhat.com/jbride/labsCommon/setup.html[Middleware Lab Overview and Set-up]
 
 image::images/rhheader.png[width=900]
 
@@ -64,6 +65,7 @@ Some use-cases however are better served with a PER_REQUEST KIE session where th
 When using a PER_REQUEST session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
 Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
 A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
+
 This reference architecture provides an API that allows for interaction with both SINGELTON and PER_REQUEST KIE sessions.
 
 
@@ -120,50 +122,161 @@ Example KIE project that includes a single rule.
 This example KIE project is invoked by remote clients via the rules management API functionality provided in this reference architecture.
 
 . *rulesMgmt*:  Provides the following:
-.. Rules Management CDI bean
++
+image::images/refarchlayers.png[]
+
+.. *Rules Management CDI bean*
 +
 Similar to the existing BPM Suite 6 Execution Server, this Rules Management CDI bean is _Deployment Unit_ aware.
 The Rules Management CDI bean is generic in the sense that its API specifies java.lang.Object to insert facts and globals into the working memory of the rules engine.
 The Rules Management CDI bean can be wrapped and exposed using a variety of different transports.
 ie:  A user of this reference architecture may elect to expose this Rules Management CDI bean as a SOAP and/or JMS service.
 
-.. Rules Management EJB Service
+.. *Rules Management EJB Service*
 +
 Allows for local and/or remote EJB clients to invoke the Rules Management API in a performant, transactional manner.
 If an application needs the rulesMgmt functionality to participate in an 2-phase commit transaction, integration with this EJB interface is recommended.
 
-.. Rules Management RESTful service
+.. *Rules Management RESTful service*
 +
 Allows for invocation of the Rules Management API via http.
 Introduces over-head of JAXB (un)marshalling of an applications domain model.
 
+.. *ejb-client*
++
+Contains a sample EJB java client that invokes the RulesManagement EJB Service directly (and by-passes the RESTful interface of this solution).
 
 == Pre-Requisites
+The remainder of this documentation provides instructions for installation, configuration and execution of this reference architecture in Red Hat's Partner Demo System.
+The following is a list of pre-requisites:
 
-. Experience with BPM Suite 6 and in particular the rules engine functionality.
-. BPM Suite 6 environment configured to use one its supported relational databases.
-. git
-. maven 3.*
+. OPENTLC-SSO credentials
 +
-maven should be configured to use the BPM Suite 6 and JBoss EAP 6.1.1 maven repositories.
+`OPENTLC-SSO` user credentials are used to log into the Red Hat Partner Demo System (PDS).
+If you do not currently have an `OPENTLC-SSO` userId, please email: `OPEN-program@redhat.com`.
+
+. Familiarity with Partner Demo System
++
+If you are not already familiar with Red Hat's `Partner Demo System`, please execute what is detailed in the {mwlaboverviewsetup} guide.
+Doing so will ensure that you are proficient with the tooling and workflow needed to complete this reference architecture in an OpenShift Platform as a Service environment.
+
+. Familiarity with {bpmproduct}
 . curl
 
-== Set-up
+== Provision BPM Suite 6 application
 
-. clone this reference architecture
+. Open the `Openshift Explorer` panel of the `JBoss` perspective of JBDS
+. Right-click on the previously created connection to `broker00.ose.opentlc.com`.
 +
------
-git clone https://github.com/jboss-gpe-ref-archs/bpm_rulesMgmt.git
------
-+
-NOTE:  for the purposes of this reference architecture documentation, this new directory created from having cloned this project will be referred to as: $REF_ARCH_HOME .
+Using your `OPENTLC-SSO` credentials, a connection to `broker00.ose.opentlc.com` should already exist after having completed the {mwlaboverviewsetup} guide.
 
-. build and install this reference architecture
+. Select: `New -> Application` .
++
+Since you have already created a domain from the previous introductory lab, the workflow for creation of a new application will be slightly different than what you are used to.
+In particular, the OSE plugin will not prompt you for the creation of a new domain.
+
+. The following `New or existing OpenShift Application` pop-up should appear:
++
+image::images/new_OSE_app_bpm.png[]
+
+.. In the `Name` text box, enter: `bpmsapp`
+.. From the `Type` drop-down, select: JBoss BPMS 6.0 (rhgpe-bpms-6.0)
+.. From the `Gear profile` drop-down, select: pds_medium
+. Click `Next`
+. A new dialogue appears entitled `Set up Project for new OpenShift Aplication`.
++
+Check the check box for `Disable automatic maven build when pushing to OpenShift`.
+Afterwards, Click `Next`.
+
+. A new dialogue appears entitled `Import an existing OpenShift application`.
++
+Even though it will not be used, you will be forced to clone the remote git enabled project associated with your new OpenShift application.
+Select a location on your local filesystem where the git enabled project should be cloned to.
++
+image::images/gitclonelocation_bpm.png[]
+
+. Click `Finish`
+. The OSE plugin of JBDS will spin for a couple of minutes as the remote BPM Suite 6 enabled OpenShift application is created.
+. Eventually, the OSE plugin will prompt with a variety of pop-up related details regarding your new application.
++
+Click through all of them except when you come to the dialogue box entitled `Publish bpmsapp?`.
+For this dialogue box, click `No`
++
+image::images/publishbpmslab.png[]
+
+=== BPM Suite 6 App Verification
+
+. Using the `Remote System Explorer` perspective of JBDS, open an SSH terminal and tail the `bpms/standalone/log/server.log` of your remote BPM Suite 6 enabled OSE application
+. Log messages similar to the following should appear:
++
+image::images/newbpmlogfile.png[]
+
+== Configuration and Execution
+
+=== local: Clone this reference architecture
+This reference architecture will be cloned both in your local computer as well as in your remote BPM Suite 6 Openshift environment.
+To clone this reference architecture in your local environment, execute the following:
+
+. Open the `Git` perspective of JBDS.
+. In the `Git Repositories` panel, click the link that allows you to `Clone a Git Repository and add the clone to this view`
+. A pop-up should appear with a name of `Source Git Repository`
+. In the `URI` field, enter the following:
 +
 -----
-cd $REF_ARCH_HOME
-mvn clean install -DskipTests
+https://github.com/jboss-gpe-ref-archs/bpm_rulesMgmt.git
 -----
+
+. Click `Next`
++
+image::images/clone_repo_to_local.png[]
+
+. Continue to click `Next` through the various screens
++
+On the pop-up screen entitled `Local Destination`, change the default value of the `Directory` field to your preferred location on disk.
+For the purposes of the remainder of these instructions, this directory on your local filesystem will be referred to as:  $REF_ARCH_HOME
+
+. On the last screen of the `Clone Git Repository` pop-up, click `Finish`
++
+Doing so will clone this `bpm_jms_exec_server` project to your local disk
+
+. In JBDS, switch to the `Project Explorer` panel and navigate to:  `File -> Import -> Maven -> Existing Maven Projects`
+. In the `Root Directory` field of the `Maven Projects` pop-up, navigate to the location on disk where the `bpm_jms_exec_server` project was just cloned to.
++
+image::images/import_mvn_project.png[]
+
+. Click `next` through the various pop-up panels and finally `Finish`.
+. Your `Project Explorer` panel should now include the following mavenized projects
++
+image::images/maven_projects.png[]
+
+
+=== local: Build the Reference Architecture
+This reference architecture includes various sub-projects that need to be built locally.
+To build the various sub-projects, execute the following:
+
+. In the `Project Explorer` panel of JBDS, right-click on the `parent` project
+. Navigate to: `Run As -> Maven Install`
+. In the `Console` panel, a `BUILD SUCCESS` log message should appear.
++
+image::images/maven_build_success.png[]
+
+=== BPM Suite 6: Domain jar deployment
+This reference architecture includes a subproject called `domain`.
+This sub-project contains a maven build file along with the application specific domain classes for this reference architecture.
+In `Project Explorer`, examine the domain classes and notice that they include Java Architecture for XML Binding (JAXB) annotations.
+
+The following are directions for deploying the jar file to your remote BPM Suite 6 server running in OpenShift.
+
+From your local cloned copy of this reference architecture execute the following:
+
+. In the `Project Explorer` panel of the `JBOSS` perspective of JBDS, right-click on the `domain/target/domain-1.0.jar` in `Project Explorer` and select `Copy`.
++
+image::images/domainjar.png[]
+
+. In the `Remote System Explorer` perspective of JBDS, navigate to `bpmsapp-<your domain>.apps.ose.opentlc.com -> Sftp Files -> My Home -> bpms -> standalone -> deployments -> business-central.war -> WEB-INF -> lib`
+. Right-click and select `Paste`
++
+image::images/pastedomainjarintobizcentral.png[]
 
 . copy project libraries to _business-central_ web archive
 +
@@ -173,7 +286,10 @@ cp common/target/bpm_rulesMgmt_common.jar $JBOSS_HOME/standalone/deployments/bus
 cp rulesMgmt/target/bpm_rulesMgmt.jar $JBOSS_HOME/standalone/deployments/business-central.war/WEB-INF/lib
 -----
 
-. start BPM Suite 6
+. Re-start BPM Suite 6
+
+=== BPM Suite 6: clone this Ref Arch
+
 . clone this reference architecture in BPM Suite 6 and name the new git repository:  _bpmrulesmgmt_
 . build the _processTier_ KIE project included in this reference architecture.
 +
@@ -381,7 +497,7 @@ Included in this reference architecture is a sample EJB client that invokes the 
 === Review client code
 This client project is located at `$REF_ARCH_HOME/ejb-client`.
 
-The project contains the following sample java client class: `com.redhat.gpe.GPEExtensionsClient` .
+The project contains the following sample java client class: `com.redhat.gpe.RulesMgmtClient` .
 
 === Configuration
 Pay particular attention to the properies found at:  `$REF_ARCH_HOME/ejb-client/src/main/resources/jboss-ejb-client.properties` .

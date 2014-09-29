@@ -125,7 +125,7 @@
                                     <goal>java</goal>
                                 </goals>
                                 <configuration>
-                                    <mainClass>com.redhat.gpe.GPEExtensionsClient</mainClass>
+                                    <mainClass>com.redhat.gpe.RulesMgmtClient</mainClass>
                                     <cleanupDaemonThreads>false</cleanupDaemonThreads>
                                 </configuration>
                             </execution>
