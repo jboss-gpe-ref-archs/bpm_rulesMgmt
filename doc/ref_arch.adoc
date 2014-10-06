@@ -276,7 +276,7 @@ image::images/domainjar.png[]
 +
 image::images/pastedomainjarintobizcentral.png[]
 
-. Re-start BPM Suite 6
+. Once all 3 artifacts have been added to the `WEB-INF/lib` directory of your remote BPM Suite 6 app, re-start the JVM:
 .. Switch back to the `OpenShift Explorer` plugin of JBDS and right-click the `bpmsapp` application
 .. Select `Restart Application`
 
