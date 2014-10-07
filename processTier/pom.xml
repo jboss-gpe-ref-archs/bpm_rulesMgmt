@@ -7,24 +7,4 @@
   <version>1.0</version>
   <packaging>kjar</packaging>
   <name>processTier</name>
-  <properties>
-    <bpm.version>6.0.3-redhat-4</bpm.version>
-  </properties>
-  <repositories>
-    <repository>
-      <id>guvnor-m2-repo</id>
-      <name>Guvnor M2 Repo</name>
-      <url>http://5be0618781aa:8080/business-central/maven2/</url>
-    </repository>
-  </repositories>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.kie</groupId>
-        <artifactId>kie-maven-plugin</artifactId>
-        <version>${bpm.version}</version>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
-  </build>
 </project>
