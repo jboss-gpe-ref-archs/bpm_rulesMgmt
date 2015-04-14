@@ -264,8 +264,8 @@ Now that this reference architecture has been built locally, its artifacts need 
 . Repeat these steps for the following artifacts:
 
 * $REF_ARCH_HOME/domain/target/bpm_rulesMgmt_domain.jar
-* $REF_ARCH_HOME/domain/target/bpm_rulesMgmt_common.jar
-* $REF_ARCH_HOME/domain/target/bpm_rulesMgmt.jar
+* $REF_ARCH_HOME/common/target/bpm_rulesMgmt_common.jar
+* $REF_ARCH_HOME/rulesMgmt/target/bpm_rulesMgmt.jar
 
 .. In the `Project Explorer` panel of the `JBOSS` perspective of JBDS, right-click on the `domain/target/bpm_rulesMgmt_domain.jar` in `Project Explorer` and select `Copy`.
 +
