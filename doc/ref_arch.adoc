@@ -3,7 +3,7 @@
 :rhtlink: link:https://www.redhat.com[Red Hat]
 :bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
 :soapui: link:http://www.soapui.org/[SoapUI Tool]
-:soapui-file: link:http://[test file]
+:soapui-file: link:https://github.com/jboss-gpe-ref-archs/bpm_rulesMgmt/blob/6.1/rulesMgmt/src/test/resources/Execution-Server-soapui-project.xml[test file]
 :drools-execution-server: link:http://blog.athico.com/2014/08/drools-execution-server-demo-620beta1.html[Drools Execution Server]
 :kieserver: link:https://github.com/droolsjbpm/droolsjbpm-integration/tree/master/kie-server[drools kie server]
 :ejbremotingreference: link:https://docs.jboss.org/author/display/AS71/Remote+EJB+invocations+via+JNDI+-+EJB+client+API+or+remote-naming+project[EJB Remoting Reference guide]
