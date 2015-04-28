@@ -1,0 +1,7 @@
+<kie-container container-id="policy">
+  <release-id>
+    <artifact-id>processTier</artifact-id> 
+    <group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id>
+    <version>1.0</version> 
+  </release-id> 
+</kie-container>

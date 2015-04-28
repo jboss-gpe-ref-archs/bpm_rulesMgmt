@@ -1,3 +1,7 @@
-<PolicyGlobal>
-    <sleepTime>0</sleepTime>
-</PolicyGlobal>
+<batch-execution>
+<set-global identifier="pGlobal">
+	<com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal>
+    	<sleepTime>0</sleepTime>
+	</com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal>
+</set-global>
+</batch-execution>

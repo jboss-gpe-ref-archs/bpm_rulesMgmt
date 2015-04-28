@@ -1,0 +1,3 @@
+<batch-execution>
+<get-objects out-identifier="policy"/>
+</batch-execution>

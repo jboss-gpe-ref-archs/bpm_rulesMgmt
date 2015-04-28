@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <batch-execution>
-    <insert out-identifier="policyOut" return-object="true" entry-point="DEFAULT" disconnected="false">
-        <object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Policy">
+    <insert out-identifier="policyOut">
+        <com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>
              <policyId>234</policyId>
              <policyName>werwer</policyName>
-        </object>
-    </insert>
-    <insert out-identifier="driverOut" return-object="true" entry-point="DEFAULT" disconnected="false">
-        <object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Driver">
+        </com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>     
+   </insert>
+    <insert out-identifier="driverOut">
+        <com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver>
              <driverId>234234</driverId>
              <driverName>azra</driverName>
-        </object>
+        </com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver>
     </insert>
     <set-global identifier="pGlobal">
-        <object xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PolicyGlobal">
+        <com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal>
              <sleepTime>10000</sleepTime>
-        </object>
+        </com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal>
     </set-global>
 
     <fire-all-rules max="-1"/>
