@@ -241,7 +241,7 @@ response:
 ----
 
 == Test
-This reference architecture includes a {soapui-file} based on SoapUI to execute commands (REST requests) directly to the _Execution Server_. Take attention to the url used for the methods and the credentials should be both modified.
+This reference architecture includes a {soapui-file} based on SoapUI to execute commands (REST requests) directly to the _Execution Server_. Take attention to the url used for the methods and the credentials should be both modified. This will be discussed in more details in section 5.3.
 
 === Test Details
 
@@ -563,4 +563,31 @@ In order for facts to be returned the following attributes need to be included i
 
 .. return-object="true"
 .. out-identifier="<your identifier>"
+
+=== SoapUI
+
+This reference architecture provides a {soapui-file} to execute same commands provided as curl command line tool. The intention is to give Windows users the ability to test calls using {soapui}, which is a client REST/SOAP to create requests and inspect responses.
+
+The {soapui-file} can be directly opened into SoapUI. You should see the following project:
+
+image::images/soapui-test-file.png[width="75%"]
+
+. Before start execute requests, you may need to change the base url of your REST endpoints and change the user/password credentials. To change that globally click twice in the base url:
+
+image::images/soapui-endpoint.png[width="50%"]
+
+[start=2]
+. Then select the *Sevice Endpoints* tab.
+
+image::images/soapui-change-url.png[width="70%"]
+
+[start=3]
+. After change the url to your instance url and change the username/password properly, click in *Assign*.
+
+image::images/soapui-assign-endpoints.png[width="50%"]
+
+[start=4]
+. Select the option  *-All Requests-* and click Ok.
+
+. Now you can execute in the same order the commands described in the steps that refer to use curl. 
 
