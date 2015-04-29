@@ -182,12 +182,12 @@ Doing so will clone this `bpm_rulesMgmt` project to your local disk
 . In JBDS, switch to the `Project Explorer` panel and navigate to:  `File -> Import -> Maven -> Existing Maven Projects`
 . In the `Root Directory` field of the `Maven Projects` pop-up, navigate to the location on disk where the `bpm_rulesMgmt` project was just cloned to.
 +
-image::images/import_mvn_project.png[]
+image::images/import_mvn_project.png[width="60%"]
 
 . Click `next` through the various pop-up panels and finally `Finish`.
 . Your `Project Explorer` panel should now include the following mavenized projects
 +
-image::images/maven_projects.png[]
+image::images/maven_projects.png[width="65%"]
 
 === local: Build the Reference Architecture
 This reference architecture includes various sub-projects that need to be built locally.
