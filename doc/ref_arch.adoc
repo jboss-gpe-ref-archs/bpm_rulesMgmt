@@ -290,9 +290,9 @@ response:
 
 ==== Stateful KIE Session
 A Stateful KIE session is the default session strategy.
-This session strategy provides a single KIE Session whose scope is a `kie-container`
+This session strategy provides a single KIE Session whose scope is a `kie-container`.
 Operations on a Singleton KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
-This strategy is ideal for rules use cases that involve large number of facts and rules where it is desirable that the session not be disposed.
+This strategy is ideal for rule use cases that involve large number of facts / rules and where it is desirable that the session not be disposed.
 
 
 . *create container*: create a container to be the specific entry point resource REST for the project.
