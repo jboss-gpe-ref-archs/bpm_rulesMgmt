@@ -288,44 +288,12 @@ response:
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Kie Server info"><kie-server-info><version>6.2.0.Final-redhat-3</version></kie-server-info></response>
 -----
 
-==== SINGLETON KIE Session
-A SINGLETON KIE session is the default session strategy.
-This session strategy provides a single KIE Session whose scope is a deployment unit.
-Operations on a SINGLETON KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
+==== Stateful KIE Session
+A Stateful KIE session is the default session strategy.
+This session strategy provides a single KIE Session whose scope is a `kie-container`
+Operations on a Singleton KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
 This strategy is ideal for rules use cases that involve large number of facts and rules where it is desirable that the session not be disposed.
 
-. *Deploy a KIE project and specify SINGLETON session strategy*:
-+
-Before executing the following command, ensure that a previous deployment unit with the same GAV does not already exist.
-+
------
-curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=SINGLETON
------
-+
-response:
-+
-[source,xml]
-----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><deployment-job-result><identifier>2</identifier><operation>DEPLOY</operation><deploymentUnit><groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId><artifactId>processTier</artifactId><version>1.0</version><strategy>SINGLETON</strategy><status>ACCEPTED</status></deploymentUnit><success>true</success><explanation>deploy job accepted.</explanation></deployment-job-result>
-----
-
-. *Verify Deployment*
-+
-Deployment of Kie projects happens asynchroneously.
-Subsquently, it's important to query the execution server to verify that deployment has succeeded.
-+
------
-curl -vv -u jboss:brms -X GET http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/
------
-+
-response:
-+
-[source,xml]
------
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><deployment-unit-list><deployment-unit><groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId><artifactId>processTier</artifactId><version>1.0</version><strategy>SINGLETON</strategy><status>DEPLOYED</status></deployment-unit><deployment-unit><groupId>org.guvnor</groupId><artifactId>guvnor-asset-mgmt-project</artifactId><version>6.2.0.Final-redhat-3</version><strategy>SINGLETON</strategy><status>DEPLOYED</status></deployment-unit></deployment-unit-list>
------
-+
-Once deployment of the Kie project has succeeded, the remaining commands can be executed.
 
 . *create container*: create a container to be the specific entry point resource REST for the project.
 +
