@@ -20,9 +20,9 @@ image::images/rhheader.png[width=900]
 == Overview
 Red Hat's Business Process Management (BPM) Suite 6 product is a super-set of it's Business Rules Management (BRM) Suite 6 product.
 As such both products include a rules engine (based on technology from the open-source Drools community projects).
-BPM Suite 6 includes an _Execution Server_ that allows for remote invocation of its process engine only.
+BPM Suite 6 includes an _Execution Server_ that allows for remote invocation of its process and rules engine.
 
-The purpose of this reference architecture is to provide examples on how to invoke the rules engine of BPM Suite 6.
+The purpose of this reference architecture is to provide examples on how to invoke the rules engine of BPM Suite 6 via its _Execution Server_.
 
 === LEGAL
 
@@ -34,7 +34,7 @@ The purpose of this reference architecture is to provide examples on how to invo
 
 === Rules Management Topics
 . *Deployment Unit aware*
-+ 
++
 KIE projects are deployed as per your normal procedures using BPM Suite 6.
 KIE Base and KIE Session specifics are configured during creation of the deployment unit.
 
@@ -72,7 +72,7 @@ This reference architecture includes the following directories:
 
 . *domain*
 +
-Example application domain model classes used in this reference architecture to demonstrate capability of Execution Server functionality.
+Example application domain model classes used in this reference architecture to demonstrate capability of rules _Execution Server_.
 These example domain model classes contain JAXB annotations for (un)marshalling between its XML and java object representations.
 
 . *processTier*
@@ -202,21 +202,19 @@ image::images/maven_build_success.png[]
 === BPM Suite 6: Deployment
 Now that this reference architecture has been built locally, its artifacts need to be added to the classpath of the `business-central.war` and `kie-server.war` web applications of the remote BPM Suite 6 enabled OpenShift application.
 
-. Repeat these steps for the domain artifact:
+Both web archives are found in the following BPM Suite 6 directory: `$JBOSS_HOME/standalone/deployments`
 
-* $REF_ARCH_HOME/domain/target/bpm_rulesMgmt_domain.jar
 
-.. In the `Project Explorer` panel of the `JBOSS` perspective of JBDS, right-click on the `domain/target/bpm_rulesMgmt_domain.jar` in `Project Explorer` and select `Copy`.
+. In the `Project Explorer` panel of the `JBOSS` perspective of JBDS, right-click on the `domain/target/bpm_rulesMgmt_domain.jar` in `Project Explorer` and select `Copy`.
 +
 image::images/domainjar.png[]
 
-.. In the `Remote System Explorer` perspective of JBDS, navigate to `bpmsapp-<your domain>.apps.ose.opentlc.com -> Sftp Files -> My Home -> bpms -> standalone -> deployments -> business-central.war -> WEB-INF -> lib`
-.. Right-click and select `Paste`
-.. Repeat the same for `kie-server.war/WEB-INF/lib` folder, copying the `bpm_rulesMgmt_domain.jar` file.
+. In the `Remote System Explorer` perspective of JBDS, navigate to `bpmsapp-<your domain>.apps.ose.opentlc.com -> Sftp Files -> My Home -> bpms -> standalone -> deployments -> business-central.war -> WEB-INF -> lib`
 +
 image::images/pastedomainjarintobizcentral.png[]
-
-. Once the artifact have been added to the `WEB-INF/lib` directories of your remote BPM Suite 6 app, re-start the JVM:
+. Right-click and select `Paste`
+. Repeat the previous steps to add the `bpm_rulesMgmt_domain.jar to ``kie-server.war/WEB-INF/lib` .
+. Once the domain artifact has been added to the `WEB-INF/lib` directories of your remote BPM Suite 6 web apps, re-start the JVM:
 .. Switch back to the `OpenShift Explorer` plugin of JBDS and right-click the `bpmsapp` application
 .. Select `Restart Application`
 
@@ -241,21 +239,27 @@ response:
 ----
 
 == Test
-This reference architecture includes a {soapui-file} based on SoapUI to execute commands (REST requests) directly to the _Execution Server_. Take attention to the url used for the methods and the credentials should be both modified. This will be discussed in more details in section 5.3.
+=== Overview
 
-=== Test Details
-
-. *curl*
+. *Clients*
 +
-Because this reference architecture provides some examples of how to call the _Execution Server_, the command line curl utility is used to show-case this RESTful API.
-Any http client that allows for GET, POST, PUT and DELETE functions can be used, however. 
+This reference architecture provides examples of how to invoke the BxMS _Execution Server_.
+Examples are provided using the following HTTP clients :
+
+.. <<curl>>
+.. <<soapui>>
+
++
+The examples provided using both clients are identical.
+Which one you choose to use is based on personal preference.
+In addition to curl and soapUI, any http client that allows for GET, POST, PUT and DELETE functions can be used.
 
 . *bpmsapp-gpe.apps.ose.opentlc.com*
 +
 The test examples reference a DNS name of:  _bpmsapp-gpe.apps.ose.opentlc.com_.
 +
 _bpmsapp-gpe.apps.ose.opentlc.com_ is the name of the host where BPM Suite 6 is running when this reference architecture was created.
-You will want to customize these example commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running. 
+You will want to customize these example commands to use the IP address or DNS name of the host where your BPM Suite 6 environment is running.
 
 . *BPM Suite 6 BASIC Auth*
 +
@@ -268,7 +272,8 @@ You will want to customize the value of -u userId:password so that curl can auth
 +
 The test examples assume that they are being executed from a command terminal at the root directory of this reference architecture ($REF_ARCH_HOME).
 
-=== Sample RESTful Test Commands
+[[curl]]
+=== Sample RESTful Test Commands Using Curl
 
 *sanity check*:  ensure that the REST service is properly started:
 
@@ -276,7 +281,7 @@ The test examples assume that they are being executed from a command terminal at
 curl -v -u jboss:brms -X GET http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/
 -----
 
-response:  
+response:
 
 [source,xml]
 -----
@@ -289,88 +294,89 @@ This session strategy provides a single KIE Session whose scope is a deployment 
 Operations on a SINGLETON KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
 This strategy is ideal for rules use cases that involve large number of facts and rules where it is desirable that the session not be disposed.
 
-. *deploy a KIE project and specify SINGLETON session strategy*:
+. *Deploy a KIE project and specify SINGLETON session strategy*:
++
 Before executing the following command, ensure that a previous deployment unit with the same GAV does not already exist.
-
-
++
 -----
 curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=SINGLETON
 -----
-
++
 response:
-
++
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><deployment-job-result><identifier>2</identifier><operation>DEPLOY</operation><deploymentUnit><groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId><artifactId>processTier</artifactId><version>1.0</version><strategy>SINGLETON</strategy><status>ACCEPTED</status></deploymentUnit><success>true</success><explanation>deploy job accepted.</explanation></deployment-job-result>
 ----
 
-[start=2] 
-. *Deployment of Kie projects happens asynchroneously.*
+. *Verify Deployment*
++
+Deployment of Kie projects happens asynchroneously.
 Subsquently, it's important to query the execution server to verify that deployment has succeeded.
-
++
 -----
 curl -vv -u jboss:brms -X GET http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/
 -----
-
++
 response:
-
++
 [source,xml]
 -----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><deployment-unit-list><deployment-unit><groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId><artifactId>processTier</artifactId><version>1.0</version><strategy>SINGLETON</strategy><status>DEPLOYED</status></deployment-unit><deployment-unit><groupId>org.guvnor</groupId><artifactId>guvnor-asset-mgmt-project</artifactId><version>6.2.0.Final-redhat-3</version><strategy>SINGLETON</strategy><status>DEPLOYED</status></deployment-unit></deployment-unit-list>
 -----
-
-
++
 Once deployment of the Kie project has succeeded, the remaining commands can be executed.
 
 . *create container*: create a container to be the specific entry point resource REST for the project.
 +
 -----
-curl -v -u jboss:brms -X PUT -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/CreateContainer.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy 
+curl -v -u jboss:brms -X PUT -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/CreateContainer.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
 -----
 +
-response:  
+response:
 +
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Container policy successfully deployed with module com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0."><kie-container container-id="policy" status="STARTED"><release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></release-id><resolved-release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></resolved-release-id></kie-container></response>
-----  
+----
 
-[start=2]
-. *list containers*: list all containers created.
+. *List containers*: list all containers created.
 +
 -----
 curl -v -u jboss:brms -X GET http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/
 -----
 +
-response:  
+response:
 +
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="List of created containers"><kie-containers><kie-container container-id="policy" status="STARTED"><release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></release-id><resolved-release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></resolved-release-id></kie-container></kie-containers></response>
-----  
+----
 
-[start=3]
-. *insert global*: insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:
+. *Insert global*:
++
+insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyGlobal.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
 -----
 +
-response:  
+response:
 +
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Container policy successfully called."><results>&lt;execution-results/&gt;</results></response>
-----  
+----
 
-[start=4]
-. *insert fact*: insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to a deployment unit:
+. *Insert fact*:
++
+insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to a deployment unit:
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
 -----
 +
-response: 
+response:
 +
 [source,xml]
 -----
@@ -386,36 +392,38 @@ response:
 </execution-results>]]></results>
 </response>
 -----
++
+[NOTE]
+Pay particular attention to the value of *external-form*.
+This value is used later in the lab exercise when getting and deleting this fact.
 
-[start=5]
 . *fireAllRules*: fire all rules included in the working memory of the rules engine assigned to a deployment unit
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/FireAllRules.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
 -----
 +
-response:  
+response:
 +
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Container policy successfully called."><results>&lt;execution-results/&gt;</results></response>
 ----
-
++
 NOTE: Check the server log to see that the value defined in the PolicyGlobal.xml for sleepTime attribute was printed as 0 properly according to the testRule.drl.
-
++
 ----
 19:00:50,108 INFO  [stdout] (http-/127.0.0.1:8080-7) testRule() sleepTime = 0
 19:00:50,109 INFO  [stdout] (http-/127.0.0.1:8080-7) testRule() done sleeping
 ----
 
-[start=6]
 . *get objects*: return a Collection of all the facts presently in the working memory of the rules engine
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/GetObjects.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
 -----
 +
-response: 
+response:
 +
 [source,xml]
 ----
@@ -437,13 +445,22 @@ response:
 </response>
 ----
 
-. *get fact*: given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a deployment unit
+. *Get fact*:
++
+Given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a deployment unit
+
+.. Modify the value of the `fact-handle` attribute in the request payload.
++
+Edit `rulesMgmt/src/test/resources/GetObject.xml` such that the value of the `fact-handle` attribute corresponds to the value of the `external-form` attribute provided when the fact was initially inserted.
++
+image::images/getobject.png[]
+.. Execute:
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/GetObject.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
 -----
 +
-response: 
+response:
 +
 [source,xml]
 ----
@@ -459,13 +476,21 @@ response:
 </response>
 ----
 
-. *delete specific fact*: given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
+. *delete specific fact*:
++
+given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
+
+.. Modify the value of the `fact-handle` attribute in the request payload.
++
+Similar to the previous step, edit: `rulesMgmt/src/test/resources/RetractObject.xml`
+
+.. Execute:
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/RetractObject.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
 -----
 +
-response:  
+response:
 +
 [source,xml]
 ----
@@ -501,7 +526,7 @@ response:
 curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
 -----
 +
-response: 
+response:
 +
 [source,xml]
 ------
@@ -535,7 +560,7 @@ All batch commands included in the http payload are executed in the PER_REQUEST 
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy"
 ------
 +
-response: 
+response:
 +
 [source,xml]
 ------
@@ -564,7 +589,8 @@ In order for facts to be returned the following attributes need to be included i
 .. return-object="true"
 .. out-identifier="<your identifier>"
 
-=== SoapUI
+[[soapui]]
+=== Sample RESTful Test Commands using SoapUI
 
 This reference architecture provides a {soapui-file} to execute same commands provided as curl command line tool. The intention is to give Windows users the ability to test calls using {soapui}, which is a client REST/SOAP to create requests and inspect responses.
 
@@ -589,5 +615,4 @@ image::images/soapui-assign-endpoints.png[width="50%"]
 [start=4]
 . Select the option  *-All Requests-* and click Ok.
 
-. Now you can execute in the same order the commands described in the steps that refer to use curl. 
-
+. Now you can execute in the same order the commands described in the steps that refer to use curl.

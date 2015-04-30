@@ -1,3 +1,3 @@
 <batch-execution>
-<get-object fact-handle="0:7:2102535295:2102535295:7:DEFAULT:NON_TRAIT" out-identifier="policy"/>
+  <get-object fact-handle="0:2:1380070422:1380070422:2:DEFAULT:NON_TRAIT" out-identifier="policy"/>
 </batch-execution>

@@ -1,8 +1,8 @@
 <batch-execution>
-<insert>
-<com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>
-    <policyId>4</policyId>
-    <policyName>azra policy</policyName>
-</com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>
-</insert>
+  <insert out-identifier="policyOut">
+    <com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>
+        <policyId>4</policyId>
+        <policyName>azra policy</policyName>
+    </com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>
+  </insert>
 </batch-execution>
