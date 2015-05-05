@@ -1,6 +1,7 @@
 :data-uri:
 :toc2:
 :rhtlink: link:https://www.redhat.com[Red Hat]
+:bugzilla: link:https://bugzilla.redhat.com/show_bug.cgi?id=1218461[BZ-1218461]
 :bpmproduct: link:https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_BPM_Suite/[Red Hat's BPM Suite 6 product]
 :soapui: link:http://www.soapui.org/[SoapUI Tool]
 :soapui-file: link:https://github.com/jboss-gpe-ref-archs/bpm_rulesMgmt/blob/6.1/rulesMgmt/src/test/resources/Execution-Server-soapui-project.xml[test file]
@@ -540,7 +541,7 @@ image::images/knowledge_bases_sessions.png[]
 .. In the *State* column change to *Stateless*
 .. Click *Save*.
 
-NOTE: There is a BZ that avoids to create multiple sessions and use them by sending commands that refer them by REST, that way we wouldn't need to change the session type manually, we could only change the command payloads to refer the session by it's name once they were created in the very first compile commmand.
+NOTE: There is a {bugzilla} that avoids to create multiple sessions and use them by sending commands that refer them by REST, that way we wouldn't need to change the session type manually, we could only change the command payloads to refer the session by it's name once they were created in the very first compile commmand.
 
 [start=2]
 . build and install the _processTier_ KIE project included in this reference architecture.
