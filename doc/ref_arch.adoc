@@ -620,7 +620,7 @@ This reference architecture provides a {soapui-file} to execute same commands pr
 
 The {soapui-file} can be directly opened into SoapUI. You should see the following project:
 
-image::images/soapui-test-file.png[width="75%"]
+image::images/soapui-test-file.png[width="65%"]
 
 . Before start execute requests, you may need to change the base url of your REST endpoints and change the user/password credentials. To change that globally click twice in the base url:
 
