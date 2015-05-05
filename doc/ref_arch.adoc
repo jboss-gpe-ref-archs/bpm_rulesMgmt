@@ -43,28 +43,19 @@ Deployment Units are a BPM Suite 6 concept only.
 Deployment unit functionality is not applicable to BRM Suite 6.
 
 
-. *Scoped KIESessions*
-+
-Many rules use-cases benefit from a SINGLETON KIESession whose scope is the life of a BPM Suite 6 Deployment Unit.
-Some use-cases however are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
-When using a PER_REQUEST session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
-Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
-A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
-
-
 . *Domain Model Classes*
 +
 Add your domain model classes to the java classpath of the business-central web archive of BPM Suite 6.
 This is typically done via either of the following:
 
-.. add domain model libraries to business-central.war/WEB-INF/lib
-.. add domain model libraries to kie-server.war/WEB-INF/lib
+.. add domain model libraries to `business-central.war/WEB-INF/lib`
+.. add domain model libraries to `kie-server.war/WEB-INF/lib`
 .. deploy your doman model libraries as static JBoss modules and define an explicit dependency in the business-central and kie-server web archives to this static JBoss module.
 
 +
 Related, there is not a need to define dependencies to your domain model classes in the pom.xml of your KIE project.
 You may choose to define dependencies to your domain model in the pom.xml of your KIE project (ie:  for design-time requirements imposed by the various editors of the BPM Console).
-However, this reference architecture does not inspect the classpath created by the KIE project when resolving classes .... only the java classpath.
+However, this reference architecture does not inspect the classpath created by the KIE project when resolving classes, only the java classpath.
 
 
 === Directory Structure
@@ -86,17 +77,17 @@ Provides tests and xml used to call the rest endpoint. Also there is a soapUI pr
 
 
 == Pre-Requisites
-The remainder of this documentation provides instructions for installation, configuration and execution of this reference architecture in Red Hat's Partner Demo System.
+The remainder of this documentation provides instructions for installation, configuration and execution of this reference architecture in Red Hat Partner Demo System (RHPDS).
 The following is a list of pre-requisites:
 
 . OPENTLC-SSO credentials
 +
-`OPENTLC-SSO` user credentials are used to log into the Red Hat Partner Demo System (PDS).
+`OPENTLC-SSO` user credentials are used to log into the Red Hat Partner Demo System (RHPDS).
 If you do not currently have an `OPENTLC-SSO` userId, please email: `OPEN-program@redhat.com`.
 
 . Familiarity with Partner Demo System
 +
-If you are not already familiar with Red Hat's `Partner Demo System`, please execute what is detailed in the {mwlaboverviewsetup} guide.
+If you are not already familiar with *Red Hat Partner Demo System (RHPDS)*, please execute what is detailed in the {mwlaboverviewsetup} guide.
 Doing so will ensure that you are proficient with the tooling and workflow needed to complete this reference architecture in an OpenShift Platform as a Service environment.
 
 . Familiarity with {bpmproduct}
@@ -182,12 +173,12 @@ Doing so will clone this `bpm_rulesMgmt` project to your local disk
 . In JBDS, switch to the `Project Explorer` panel and navigate to:  `File -> Import -> Maven -> Existing Maven Projects`
 . In the `Root Directory` field of the `Maven Projects` pop-up, navigate to the location on disk where the `bpm_rulesMgmt` project was just cloned to.
 +
-image::images/import_mvn_project.png[width="60%"]
+image::images/import_mvn_project.png[width="65%"]
 
 . Click `next` through the various pop-up panels and finally `Finish`.
 . Your `Project Explorer` panel should now include the following mavenized projects
 +
-image::images/maven_projects.png[width="65%"]
+image::images/maven_projects.png[width="50%"]
 
 === local: Build the Reference Architecture
 This reference architecture includes various sub-projects that need to be built locally.
@@ -213,7 +204,7 @@ image::images/domainjar.png[]
 +
 image::images/pastedomainjarintobizcentral.png[]
 . Right-click and select `Paste`
-. Repeat the previous steps to add the `bpm_rulesMgmt_domain.jar to ``kie-server.war/WEB-INF/lib` .
+. Repeat the previous steps to add the `bpm_rulesMgmt_domain.jar` to `kie-server.war/WEB-INF/lib`.
 . Once the domain artifact has been added to the `WEB-INF/lib` directories of your remote BPM Suite 6 web apps, re-start the JVM:
 .. Switch back to the `OpenShift Explorer` plugin of JBDS and right-click the `bpmsapp` application
 .. Select `Restart Application`
@@ -226,16 +217,20 @@ This reference architecture contains a few simple rules that can be used to smok
 . clone this reference architecture in BPM Suite 6 and name the new git repository:  _bpmrulesmgmt_
 . build the _processTier_ KIE project included in this reference architecture.
 +
-
 -----
 curl -vv -u jboss:brms -X POST http://bpmsapp-<your.domain.name>.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/compile
 -----
-
++
 response:
-
++
 [source,json]
 ----
-{"jobId":"1430254875257-2","status":"APPROVED","repositoryName":"bpmrulesmgmt","projectName":"processTier"}
+{
+    "jobId": "1430254875257-2",
+    "projectName": "processTier",
+    "repositoryName": "bpmrulesmgmt",
+    "status": "APPROVED"
+}
 ----
 
 == Test
@@ -285,7 +280,12 @@ response:
 
 [source,xml]
 -----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Kie Server info"><kie-server-info><version>6.2.0.Final-redhat-3</version></kie-server-info></response>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response msg="Kie Server info" type="SUCCESS">
+	<kie-server-info>
+		<version>6.2.0.Final-redhat-3</version>
+	</kie-server-info>
+</response>
 -----
 
 ==== Stateful KIE Session
@@ -294,6 +294,16 @@ This session strategy provides a single KIE Session whose scope is a `kie-contai
 Operations on a Singleton KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
 This strategy is ideal for rule use cases that involve large number of facts / rules and where it is desirable that the session not be disposed.
 
+In the `kmodule.xml` descriptor we can define two kinds of sessions: *stateful* and *stateless*, which we could use in our examples. Following is the `kmodule.xml` file that defines our stateful session with name `ksession1`. Note that stateful session is *default*.
+
+[source,xml]
+-----
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <kbase name="kiebase" default="true" eventProcessingMode="cloud" equalsBehavior="identity">
+    <ksession name="ksession1" type="stateful" default="true" clockType="realtime"/>   
+  </kbase>
+</kmodule>
+-----
 
 . *create container*: create a container to be the specific entry point resource REST for the project.
 +
@@ -305,7 +315,21 @@ response:
 +
 [source,xml]
 ----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Container policy successfully deployed with module com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0."><kie-container container-id="policy" status="STARTED"><release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></release-id><resolved-release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></resolved-release-id></kie-container></response>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response msg="Container policy successfully deployed with module com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0." type="SUCCESS">
+	<kie-container container-id="policy" status="STARTED">
+		<release-id>
+			<artifact-id>processTier</artifact-id>
+			<group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id>
+			<version>1.0</version>
+		</release-id>
+		<resolved-release-id>
+			<artifact-id>processTier</artifact-id>
+			<group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id>
+			<version>1.0</version>
+		</resolved-release-id>
+	</kie-container>
+</response>
 ----
 
 . *List containers*: list all containers created.
@@ -318,7 +342,23 @@ response:
 +
 [source,xml]
 ----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="List of created containers"><kie-containers><kie-container container-id="policy" status="STARTED"><release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></release-id><resolved-release-id><artifact-id>processTier</artifact-id><group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id><version>1.0</version></resolved-release-id></kie-container></kie-containers></response>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response msg="List of created containers" type="SUCCESS">
+	<kie-containers>
+		<kie-container container-id="policy" status="STARTED">
+			<release-id>
+				<artifact-id>processTier</artifact-id>
+				<group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id>
+				<version>1.0</version>
+			</release-id>
+			<resolved-release-id>
+				<artifact-id>processTier</artifact-id>
+				<group-id>com.redhat.gpe.refarch.bpm_rulesMgmt</group-id>
+				<version>1.0</version>
+			</resolved-release-id>
+		</kie-container>
+	</kie-containers>
+</response>
 ----
 
 . *Insert global*:
@@ -333,7 +373,10 @@ response:
 +
 [source,xml]
 ----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Container policy successfully called."><results>&lt;execution-results/&gt;</results></response>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response msg="Container policy successfully called." type="SUCCESS">
+	<results>&lt;execution-results/&gt;</results>
+</response>
 ----
 
 . *Insert fact*:
@@ -375,7 +418,10 @@ response:
 +
 [source,xml]
 ----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Container policy successfully called."><results>&lt;execution-results/&gt;</results></response>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response msg="Container policy successfully called." type="SUCCESS">
+	<results>&lt;execution-results/&gt;</results>
+</response>
 ----
 +
 NOTE: Check the server log to see that the value defined in the PolicyGlobal.xml for sleepTime attribute was printed as 0 properly according to the testRule.drl.
@@ -413,6 +459,7 @@ response:
 </response>
 ----
 
+[[get-object]]
 . *Get fact*:
 +
 Given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a deployment unit
@@ -462,67 +509,63 @@ response:
 +
 [source,xml]
 ----
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><response type="SUCCESS" msg="Container policy successfully called."><results>&lt;execution-results/&gt;</results></response>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response msg="Container policy successfully called." type="SUCCESS">
+	<results>&lt;execution-results/&gt;</results>
+</response>
 ----
 
+[TIP]
+In order for facts to be returned the following attributes need to be included in the initial BatchExecutionCommand payload:
+`return-object="true"` and `out-identifier="<your identifier>"`
 
-==== PER_REQUEST KIE Session
-Some rules use-cases are better served with a PER_REQUEST KIE session where the life of the session is a single transaction.
-When using a PER_REQUEST session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
-Since a PER_REQUEST KIE Session will never be re-used, its state is not persisted to a database as it is with SINGLETON and PER_PROCESS_INSTANCE strategies.
-A PER_REQUEST KIE Session incurs minimal over-head and allows for concurrency.
 
-. *deploy a KIE project and specify PER_REQUEST session strategy*:
-Before executing the following command, ensure that a previous deployment unit with the same GAV does not already exist.
-To undeploy the previous deployment unit:
+==== Stateless KIE Session
+Some rules use-cases are better served with a Stateless KIE session where the life of the session is a single transaction.
+When using a Stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
+A stateless session can be called like a function passing it some data and then receiving some results back. 
+
+We will execute a batch command that adds the facts and fire all rules, after we will try to get a fact by it's fact handle id. The expected behavior is that the fact does not exist since the session used was defined as stateless.
+
+. *Define session as stateless*
+.. Navigate your browser to the BPM Console of your remote OpenShift application.
+.. Authenticate using a userId of `jboss` and a password of `brms`.
+.. Select *Authoring -> Project Authoring*.
+.. Click on *Project Settings: Project General Settings* and select *Knowledge bases and sessions*.
 +
------
-curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/undeploy
------
+image::images/knowledge_bases_sessions.png[]
 +
-response:
-+
-[source,xml]
-------
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><deployment-job-result><identifier>4</identifier><operation>UNDEPLOY</operation><deploymentUnit><groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId><artifactId>processTier</artifactId><version>1.0</version><strategy>SINGLETON</strategy><status>ACCEPTED</status></deploymentUnit><success>true</success><explanation>undeploy job accepted.</explanation></deployment-job-result>
-------
+[start=5]
+.. Scroll down to see the *Knowledge Sessions* definitions.
+.. In the *State* column change to *Stateless*
+.. Click *Save*.
+
+NOTE: There is a BZ that avoids to create multiple sessions and use them by sending commands that refer them by REST, that way we wouldn't need to change the session type manually, we could only change the command payloads to refer the session by it's name once they were created in the very first compile commmand.
 
 [start=2]
-. *And now you are good to go:*
+. build and install the _processTier_ KIE project included in this reference architecture.
 +
 -----
-curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/com.redhat.gpe.refarch.bpm_rulesMgmt:processTier:1.0/deploy?strategy=PER_REQUEST
+curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/install
 -----
 +
 response:
 +
-[source,xml]
-------
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><deployment-job-result><identifier>5</identifier><operation>DEPLOY</operation><deploymentUnit><groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId><artifactId>processTier</artifactId><version>1.0</version><strategy>PER_REQUEST</strategy><status>ACCEPTED</status></deploymentUnit><success>true</success><explanation>deploy job accepted.</explanation></deployment-job-result>
-------
-
-Deployment of Kie projects happens asynchroneously.
-Subsquently, it's important to query the execution server to verify that deployment has succeeded.
-
------
-curl -vv -u jboss:brms -X GET http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/deployment/
------
-
-response:
-
-[source,xml]
------
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><deployment-unit-list><deployment-unit><groupId>com.redhat.gpe.refarch.bpm_rulesMgmt</groupId><artifactId>processTier</artifactId><version>1.0</version><strategy>PER_REQUEST</strategy><status>DEPLOYED</status></deployment-unit><deployment-unit><groupId>org.guvnor</groupId><artifactId>guvnor-asset-mgmt-project</artifactId><version>6.2.0.Final-redhat-3</version><strategy>SINGLETON</strategy><status>DEPLOYED</status></deployment-unit></deployment-unit-list>
------
-
-Once deployment of the Kie project has succeeded, the remaining command can be executed.
-
-[start=3]
+[source,json]
+----
+{
+    "jobId": "1430777770298-3",
+    "projectName": "processTier",
+    "repositoryName": "bpmrulesmgmt",
+    "status": "APPROVED"
+}
+----
++
 . *execute batch command*:
 +
-Supports use-cases requiring a PER_REQUEST KIESession.
+This batch command supports use-cases requiring a Stateless KIE Session.
 HTTP payload consists of XML representation of the org.kie.api.command.BatchExecutionCommand.
-All batch commands included in the http payload are executed in the PER_REQUEST kie session in a single transaction.
+All batch commands included in the http payload are executed in the Stateless KIE session in a single transaction.
 +
 ------
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy"
@@ -546,16 +589,28 @@ response:
       <driverName>azra</driverName>
     </com.redhat.gpe.refarch.bpm__rulesMgmt.domain.Driver>
   </result>
-  <fact-handle identifier="policyOut" external-form="0:11:598901226:598901226:11:DEFAULT:NON_TRAIT"/>
-  <fact-handle identifier="driverOut" external-form="0:12:477051893:477051893:12:DEFAULT:NON_TRAIT"/>
+  <fact-handle identifier="policyOut" external-form="0:7:1162652775:1162652775:7:DEFAULT:NON_TRAIT"/>
+  <fact-handle identifier="driverOut" external-form="0:8:751485372:751485372:8:DEFAULT:NON_TRAIT"/>
 </execution-results>]]></results>
 </response>
 ------
 +
-In order for facts to be returned the following attributes need to be included in the initial BatchExecutionCommand payload:
+.. Pay attention to the attribute `external-form`. We will execute the <<get-object>> process passing the `external-form` id returned in the last command and follow the instructions, and we should see a null return for the fact.
++
+response:
++
+[source,xml]
+------
+<response type="SUCCESS" msg="Container policy successfully called.">
+   <results><execution-results>
+  <result identifier="policy">
+    <null/>
+  </result>
+</execution-results></results>
+</response>
+------
 
-.. return-object="true"
-.. out-identifier="<your identifier>"
+
 
 [[soapui]]
 === Sample RESTful Test Commands using SoapUI
