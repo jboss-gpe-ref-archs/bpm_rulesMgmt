@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<batch-execution lookup="ksession2">
+    <insert out-identifier="policyOut">
+        <com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>
+             <policyId>234</policyId>
+             <policyName>werwer</policyName>
+        </com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Policy>     
+   </insert>
+    <insert out-identifier="driverOut">
+        <com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver>
+             <driverId>234234</driverId>
+             <driverName>azra</driverName>
+        </com.redhat.gpe.refarch.bpm_rulesMgmt.domain.Driver>
+    </insert>
+    <set-global identifier="pGlobal">
+        <com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal>
+             <sleepTime>10000</sleepTime>
+        </com.redhat.gpe.refarch.bpm_rulesMgmt.domain.PolicyGlobal>
+    </set-global>
+
+    <fire-all-rules max="-1"/>
+</batch-execution>

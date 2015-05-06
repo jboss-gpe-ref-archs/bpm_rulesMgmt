@@ -216,10 +216,10 @@ This reference architecture contains a few simple rules that can be used to smok
 . Navigate your browser to the BPM Console of your remote OpenShift application.
 . Authenticate using a userId of `jboss` and a password of `brms`.
 . clone this reference architecture in BPM Suite 6 and name the new git repository:  _bpmrulesmgmt_
-. build the _processTier_ KIE project included in this reference architecture.
+. build and deploy the _processTier_ KIE project included in this reference architecture.
 +
 -----
-curl -vv -u jboss:brms -X POST http://bpmsapp-<your.domain.name>.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/compile
+curl -vv -u jboss:brms -X POST http://bpmsapp-<your.domain.name>.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/deploy
 -----
 +
 response:
@@ -295,13 +295,14 @@ This session strategy provides a single KIE Session whose scope is a `kie-contai
 Operations on a Singleton KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
 This strategy is ideal for rule use cases that involve large number of facts / rules and where it is desirable that the session not be disposed.
 
-In the `kmodule.xml` descriptor we can define two kinds of sessions: *stateful* and *stateless*, which we could use in our examples. Following is the `kmodule.xml` file that defines our stateful session with name `ksession1`. Note that stateful session is *default*.
+In the `kmodule.xml` descriptor we can define two kinds of sessions: *stateful* and *stateless*, which we could use in our examples. Following is the `kmodule.xml` file that defines our stateful session with name `ksession1`, and our stateless session as `ksession2. Note that stateful session is *default*.
 
 [source,xml]
 -----
 <kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <kbase name="kiebase" default="true" eventProcessingMode="cloud" equalsBehavior="identity">
-    <ksession name="ksession1" type="stateful" default="true" clockType="realtime"/>   
+    <ksession name="ksession" type="stateful" default="true" clockType="realtime"/>
+    <ksession name="ksession2" type="stateless" default="false" clockType="realtime"/>
   </kbase>
 </kmodule>
 -----
@@ -364,7 +365,7 @@ response:
 
 . *Insert global*:
 +
-insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to a deployment unit:
+insert an application specific global (called: pGlobal) into the working memory of the rules engine assigned to stateful session:
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/PolicyGlobal.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
@@ -382,7 +383,7 @@ response:
 
 . *Insert fact*:
 +
-insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to a deployment unit:
+insert an application specifc fact (called: policy) into the working memory of the rules engine assigned to the stateful session:
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Policy.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
@@ -409,7 +410,7 @@ response:
 Pay particular attention to the value of *external-form*.
 This value is used later in the lab exercise when getting and deleting this fact.
 
-. *fireAllRules*: fire all rules included in the working memory of the rules engine assigned to a deployment unit
+. *fireAllRules*: fire all rules included in the working memory of the rules engine assigned to the stateful session.
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/FireAllRules.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
@@ -432,7 +433,7 @@ NOTE: Check the server log to see that the value defined in the PolicyGlobal.xml
 19:00:50,109 INFO  [stdout] (http-/127.0.0.1:8080-7) testRule() done sleeping
 ----
 
-. *get objects*: return a Collection of all the facts presently in the working memory of the rules engine
+. *get objects*: return a Collection of all the facts presently in the working memory of the rules engine.
 +
 -----
 curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/GetObjects.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
@@ -460,10 +461,9 @@ response:
 </response>
 ----
 
-[[get-object]]
 . *Get fact*:
 +
-Given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a deployment unit
+Given a fact handle, get the corresponding _policy_ fact from the working memory of the rules engine assigned to a stateful session.
 
 .. Modify the value of the `fact-handle` attribute in the request payload.
 +
@@ -494,7 +494,7 @@ response:
 
 . *delete specific fact*:
 +
-given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to a specific Deployment Unit
+given a fact handle, remove corresponding fact presently in the working memory of the rules engine assigned to the stateful session.
 
 .. Modify the value of the `fact-handle` attribute in the request payload.
 +
@@ -528,48 +528,21 @@ A stateless session can be called like a function passing it some data and then 
 
 We will execute a batch command that adds the facts and fire all rules, after we will try to get a fact by it's fact handle id. The expected behavior is that the fact does not exist since the session used was defined as stateless.
 
-. *Define session as stateless*
-.. Navigate your browser to the BPM Console of your remote OpenShift application.
-.. Authenticate using a userId of `jboss` and a password of `brms`.
-.. Select *Authoring -> Project Authoring*.
-.. Click on *Project Settings: Project General Settings* and select *Knowledge bases and sessions*.
-+
-image::images/knowledge_bases_sessions.png[]
-+
-[start=5]
-.. Scroll down to see the *Knowledge Sessions* definitions.
-.. In the *State* column change to *Stateless*
-.. Click *Save*.
-
-NOTE: There is a {bugzilla} that avoids to create multiple sessions and use them by sending commands that refer them by REST, that way we wouldn't need to change the session type manually, we could only change the command payloads to refer the session by it's name once they were created in the very first compile commmand.
-
-[start=2]
-. build and install the _processTier_ KIE project included in this reference architecture.
-+
------
-curl -vv -u jboss:brms -X POST http://bpmsapp-gpe.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/install
------
-+
-response:
-+
-[source,json]
-----
-{
-    "jobId": "1430777770298-3",
-    "projectName": "processTier",
-    "repositoryName": "bpmrulesmgmt",
-    "status": "APPROVED"
-}
-----
-+
-. *execute batch command*:
+. *Execute batch command*:
 +
 This batch command supports use-cases requiring a Stateless KIE Session.
 HTTP payload consists of XML representation of the org.kie.api.command.BatchExecutionCommand.
-All batch commands included in the http payload are executed in the Stateless KIE session in a single transaction.
+All batch commands included in the http payload are executed in the Stateless KIE session in a single transaction. Pay attention to the attribute `lookup` both in the `CommandsStateless.xml` and `GetObjectStateless.xml` files, this attribute points to which session we want to use. Sessions were defined previously in the `kmodule.xml` file descriptor. In our case the stateless session we called `ksession2`, so each payload must have the reference in the `batch-command`.
++
+[source,xml]
+------
+<batch-execution lookup="ksession2">
+------
++
+.. The request command will be:
 +
 ------
-curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/Commands.xml "http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy"
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/CommandsStateless.xml "http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy"
 ------
 +
 response:
@@ -596,7 +569,17 @@ response:
 </response>
 ------
 +
-.. Pay attention to the attribute `external-form`. We will execute the <<get-object>> process passing the `external-form` id returned in the last command and follow the instructions, and we should see a null return for the fact.
+NOTE: Pay attention to the attribute `external-form` of the `policyOut` identifier. We will pass the `external-form` id returned in the last command and follow the instructions, and we should see a null return for the fact.
+
+.. Modify the value of the `fact-handle` attribute in the request payload.
++
+.. Edit `rulesMgmt/src/test/resources/GetObjectStateless.xml` such that the value of the `fact-handle` attribute corresponds to the value of the `external-form` attribute provided when the fact was initially inserted by previous batch command.
++
+.. Execute:
++
+-----
+curl -v -u jboss:brms -X POST -H "Content-Type:application/xml" -d @rulesMgmt/src/test/resources/GetObjectStateless.xml http://bpmsapp-gpe.apps.ose.opentlc.com/kie-server/services/rest/server/containers/policy
+-----
 +
 response:
 +
@@ -610,8 +593,6 @@ response:
 </execution-results></results>
 </response>
 ------
-
-
 
 [[soapui]]
 === Sample RESTful Test Commands using SoapUI
