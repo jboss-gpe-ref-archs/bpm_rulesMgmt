@@ -143,7 +143,7 @@ image::images/publishbpmslab.png[]
 +
 image::images/newbpmlogfile.png[]
 
-== Configuration and Execution
+== Configuration
 
 === local: Clone this reference architecture
 This reference architecture will be cloned both in your local computer as well as in your remote BPM Suite 6 Openshift environment.
@@ -236,6 +236,27 @@ response:
 }
 ----
 
+=== Review *kmodule.xml*
+. In the _BPM Console_ navigate to: `Authoring -> Administration -> File Explorer -> Repositories -> bpmsrulesmgmt`.
+. Continue drill-down to: `processTier -> src -> main -> resource -> META-INF`
+. Open: `kmodule.xml`
++
+Notice that it defines two sessions: *stateful* (with name `ksession1`) and *stateless* (with name `ksession2`)
++
+[source,xml]
+-----
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <kbase name="kiebase" default="true" eventProcessingMode="cloud" equalsBehavior="identity">
+    <ksession name="ksession" type="stateful" default="true" clockType="realtime"/>
+    <ksession name="ksession2" type="stateless" default="false" clockType="realtime"/>
+    </kbase>
+</kmodule>
+-----
++
+Note that the `stateful` session is *default*.
+
+An explanation of when and why each session will be used will be provided later in this exercise.
+
 == Test
 === Overview
 
@@ -297,17 +318,7 @@ This session strategy provides a single KIE Session whose scope is a `kie-contai
 Operations on a Singleton KIE session (ie:  setGlobal, insertFact, fireAllRules, etc) are synchronized.
 This strategy is ideal for rule use cases that involve large number of facts / rules and where it is desirable that the session not be disposed.
 
-In the `kmodule.xml` descriptor we can define two kinds of sessions: *stateful* and *stateless*, which we could use in our examples. Following is the `kmodule.xml` file that defines our stateful session with name `ksession1`, and our stateless session as `ksession2. Note that stateful session is *default*.
-
-[source,xml]
------
-<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <kbase name="kiebase" default="true" eventProcessingMode="cloud" equalsBehavior="identity">
-    <ksession name="ksession" type="stateful" default="true" clockType="realtime"/>
-    <ksession name="ksession2" type="stateless" default="false" clockType="realtime"/>
-  </kbase>
-</kmodule>
------
+This section of the exercise tests the BxMS Rules Execution Server using a `stateful` session.
 
 . *create container*: create a container to be the specific entry point resource REST for the project.
 +
@@ -526,21 +537,28 @@ In order for facts to be returned the following attributes need to be included i
 ==== Stateless KIE Session
 Some rules use-cases are better served with a Stateless KIE session where the life of the session is a single transaction.
 When using a Stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
-A stateless session can be called like a function passing it some data and then receiving some results back.
 
-We will execute a batch command that adds the facts and fire all rules, after we will try to get a fact by it's fact handle id. The expected behavior is that the fact does not exist since the session used was defined as stateless.
+We will execute a batch command that adds the facts and fire all rules.
+Afterwards, we will try to get a fact by its fact handle id.
+The expected behavior is that the fact does not exist since the session used was defined as stateless.
 
-. *Execute batch command*:
-+
 This batch command supports use-cases requiring a Stateless KIE Session.
-HTTP payload consists of XML representation of the org.kie.api.command.BatchExecutionCommand.
-All batch commands included in the http payload are executed in the Stateless KIE session in a single transaction. Pay attention to the attribute `lookup` both in the `CommandsStateless.xml` and `GetObjectStateless.xml` files, this attribute points to which session we want to use. Sessions were defined previously in the `kmodule.xml` file descriptor. In our case the stateless session we called `ksession2`, so each payload must have the reference in the `batch-command`.
-+
+
+The HTTP payload consists of an XML representation of the `org.kie.api.command.BatchExecutionCommand`.
+All batch commands included in the http payload are executed in the Stateless KIE session in a single transaction.
+
+Pay attention to the attribute `lookup` both in the `CommandsStateless.xml` and `GetObjectStateless.xml` files.
+This attribute references the session to use (ie: `ksession1` or `ksession2`).
+Recall, that sessions were defined previously in the `kmodule.xml` file descriptor.
+In particular, the stateless session is called `ksession2`.
+Subsequently, for this section of the exercise, the payload of each request must include an attribute of: `lookup="ksession2"`.
+
 [source,xml]
 ------
 <batch-execution lookup="ksession2">
 ------
-+
+
+. *Execute batch command*:
 .. The request command will be:
 +
 ------
@@ -575,7 +593,7 @@ NOTE: Pay attention to the attribute `external-form` of the `policyOut` identifi
 
 .. Modify the value of the `fact-handle` attribute in the request payload.
 +
-.. Edit `rulesMgmt/src/test/resources/GetObjectStateless.xml` such that the value of the `fact-handle` attribute corresponds to the value of the `external-form` attribute provided when the fact was initially inserted by previous batch command.
+Edit `rulesMgmt/src/test/resources/GetObjectStateless.xml` such that the value of the `fact-handle` attribute corresponds to the value of the `external-form` attribute provided when the fact was initially inserted by previous batch command.
 +
 .. Execute:
 +
