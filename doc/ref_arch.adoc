@@ -216,21 +216,23 @@ This reference architecture contains a few simple rules that can be used to smok
 . Navigate your browser to the BPM Console of your remote OpenShift application.
 . Authenticate using a userId of `jboss` and a password of `brms`.
 . clone this reference architecture in BPM Suite 6 and name the new git repository:  _bpmrulesmgmt_
-. build and deploy the _processTier_ KIE project included in this reference architecture.
-+
+
+=== BPM Suite 6:  compile _processTier_ KIE project
+The _processTier_ KIE project needs to be compiled.
+Do so as follows:
+
 -----
-curl -vv -u jboss:brms -X POST http://bpmsapp-<your.domain.name>.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/deploy
+curl -vv -u jboss:brms -X POST http://bpmsapp-<your.domain.name>.apps.ose.opentlc.com/business-central/rest/repositories/bpmrulesmgmt/projects/processTier/maven/compile
 -----
-+
+
 response:
-+
+
 [source,json]
 ----
-{
-    "jobId": "1430254875257-2",
-    "projectName": "processTier",
-    "repositoryName": "bpmrulesmgmt",
-    "status": "APPROVED"
+{   "jobId":"1431010737931-1",
+    "status":"APPROVED",
+    "repositoryName":"bpmsrulesmgmt",
+    "projectName":"processTier"
 }
 ----
 
@@ -524,7 +526,7 @@ In order for facts to be returned the following attributes need to be included i
 ==== Stateless KIE Session
 Some rules use-cases are better served with a Stateless KIE session where the life of the session is a single transaction.
 When using a Stateless session, all commands to that session (ie:  insert fact, global, fireAllRules, etc) need to occur within the scope of that transaction.
-A stateless session can be called like a function passing it some data and then receiving some results back. 
+A stateless session can be called like a function passing it some data and then receiving some results back.
 
 We will execute a batch command that adds the facts and fire all rules, after we will try to get a fact by it's fact handle id. The expected behavior is that the fact does not exist since the session used was defined as stateless.
 
