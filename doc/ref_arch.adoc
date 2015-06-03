@@ -20,10 +20,10 @@ image::images/rhheader.png[width=900]
 
 == Overview
 Red Hat's Business Process Management (BPM) Suite 6 product is a super-set of it's Business Rules Management (BRM) Suite 6 product.
-As such both products include a rules engine (based on technology from the open-source Drools community projects).
-BPM Suite 6 includes an _Execution Server_ that allows for remote invocation of its process and rules engine.
+As such, both products include a rules engine (based on technology from the open-source Drools community projects).
+BPM Suite 6 includes a _Realtime Decision Server_ that allows for remote invocation of its rules engine.
 
-The purpose of this reference architecture is to provide examples on how to invoke the rules engine of BPM Suite 6 via its _Execution Server_.
+The purpose of this reference architecture is to provide examples on how to invoke the rules engine of BPM Suite 6 via its _Realtime Decision Server_.
 
 === LEGAL
 
